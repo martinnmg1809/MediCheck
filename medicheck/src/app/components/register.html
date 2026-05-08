@@ -1,0 +1,9 @@
+
+<div>
+  <h2>Registro Medicheck</h2>
+  <input type="text" [(ngModel)]="nuevoUsuario.name" placeholder="Nombre">
+  <input type="email" [(ngModel)]="nuevoUsuario.email" placeholder="Email">
+  <input type="password" [(ngModel)]="nuevoUsuario.password" placeholder="Contraseña">
+  
+  <button (click)="onRegister()">Crear Cuenta</button>
+</div>
