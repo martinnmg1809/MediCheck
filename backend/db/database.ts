@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 
-//user = vicentegonzalez10_db_user
-//pass = i6Q7Lfi2VNu9pig3
 const uri = "mongodb+srv://vicentegonzalez10_db_user:clave@medicheck.z0o2q3t.mongodb.net/?appName=MediCheck";
 
 export const connectDB = async () => {
