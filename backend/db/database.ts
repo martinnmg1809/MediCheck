@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const uri = "mongodb+srv://vicentegonzalez10_db_user:clave@medicheck.z0o2q3t.mongodb.net/?appName=MediCheck";
+const uri = "mongodb+srv://user_db_user:clave@medicheck.z0o2q3t.mongodb.net/?appName=MediCheck";
 
 export const connectDB = async () => {
   try {
