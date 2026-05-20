@@ -4,6 +4,9 @@
   <input type="text" [(ngModel)]="nuevoUsuario.name" placeholder="Nombre">
   <input type="email" [(ngModel)]="nuevoUsuario.email" placeholder="Email">
   <input type="password" [(ngModel)]="nuevoUsuario.password" placeholder="Contraseña">
-  
+  <select [(ngModel)]="nuevoUsuario.role">
+    <option value="paciente">Paciente</option>
+    <option value="doctor">Doctor</option>
+  </select>
   <button (click)="onRegister()">Crear Cuenta</button>
 </div>

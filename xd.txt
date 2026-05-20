@@ -13,14 +13,5 @@ comprometen la integridad de la base de datos
 Hecho:
 
 Por hacer (V):
-Realizar reconexión de backend (cambiado de mongodb a neon)
--archivos comprometidos:
---backend/db/database.tss
---backend/index.ts
---backend/routes/auth.ts
----
---src/app/components/register.ts
---src/app/services/auth.ts
---src/app/
 logica de login/register/recuperar contraseña (en carpeta backend)
 interfaz para procesar los datos de login/register/recuperar contraseña (en carpeta medicheck)

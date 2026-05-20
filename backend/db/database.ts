@@ -1,15 +1,22 @@
-import mongoose from 'mongoose';
+import { neon } from '@neondatabase/serverless';
+import dotenv from 'dotenv';
 
-const uri = "mongodb+srv://user_db_user:clave@medicheck.z0o2q3t.mongodb.net/?appName=MediCheck";
+dotenv.config();
 
-export const connectDB = async () => {
-  try {
-    // Conexión simplificada que evita errores de tipos
-    await mongoose.connect(uri);
-    
-    console.log("Conexión exitosa a MongoDB Atlas");
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+    throw new Error('La variable de entorno DATABASE_URL no está definida correctamente.');
+}
+
+export const sql = neon(connectionString);
+
+export async function connectDB() {
+  try { 
+    await sql`SELECT version()`;
+    console.log('Conexión a la base de datos establecida correctamente.');
   } catch (error) {
-    console.error("Error en la conexión:", error);
-    process.exit(1); 
+    console.error('Error al conectar a la base de datos:', error);
+    throw error; // Re-lanzamos el error para que pueda ser manejado por el llamador
   }
-};
+}

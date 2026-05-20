@@ -1,7 +1,11 @@
+import dotenv from 'dotenv';
+dotenv.config(); 
 import express from 'express';
 import cors from 'cors';
 import { connectDB } from './db/database';
 import authRoutes from './routes/auth';
+
+
 
 const app = express();
 
@@ -9,7 +13,7 @@ const app = express();
 app.use(cors()); // Permite que Angular se conecte sin bloqueos de seguridad
 app.use(express.json()); // Permite que Express entienda los JSON que envía Angular
 
-// Iniciamos la conexión a MongoDB
+// Iniciamos la conexión a la bdd
 connectDB();
 
 // Le decimos a Express que use tus rutas de registro

@@ -1,5 +1,3 @@
-//en este codigo se realizan las peticiones hhtp post al backend
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../models/interfaces'; 
@@ -15,5 +13,9 @@ export class AuthService {
 
   register(userData: User): Observable<any> {
     return this.http.post(`${this.API_URL}/register`, userData);
+  }
+  
+  login(credentials: Pick<User, 'email' | 'password'>): Observable<any> {
+    return this.http.post(`${this.API_URL}/login`, credentials);
   }
 }

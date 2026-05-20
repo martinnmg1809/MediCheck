@@ -16,7 +16,7 @@ export class RegisterComponent {
     name: '',
     email: '',
     password: '',
-    role: 'paciente'
+    role: "paciente"
   };
 
   constructor(private authService: AuthService) {}
