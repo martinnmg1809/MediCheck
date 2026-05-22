@@ -1,0 +1,25 @@
+<div>
+  <button (click)="irALista()">Ir a Mi Lista de Tratamiento ➔</button>
+  <hr>
+
+  <h3>Asignar Nuevo Horario</h3>
+  
+  <label>Escribe para buscar medicamento: </label>
+  <input type="text" [(ngModel)]="filtroTexto" placeholder="Ej: Paracetamol...">
+  <br><br>
+  
+  <label>Selecciona el resultado: </label>
+  <select [(ngModel)]="medicamentoSeleccionado">
+    <option *ngFor="let med of filtrarMedicamentos()" [value]="med.id">
+      {{ med.nombre_comercial }} ({{ med.principio_activo }} - {{ med.concentracion }})
+    </option>
+  </select>
+  <br><br>
+  
+  <label>Elige la hora: </label>
+  <input type="time" [(ngModel)]="nuevoHorario">
+  
+  <button (click)="crearHorario()" [disabled]="agregando">
+    {{ agregando ? 'Guardando...' : 'Agregar al Tratamiento' }}
+  </button>
+</div>
