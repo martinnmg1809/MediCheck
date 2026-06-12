@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #F0F8FF; /* Azul clínico claro */
+  font-family: 'Inter', sans-serif;
+  padding: 20px;
+}
+
+.auth-card {
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 450px; /* Un poco más ancha que el login para que respiren los campos */
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 105, 140, 0.08);
+}
+
+.brand-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.med-icon {
+  color: #009688; /* Teal médico */
+  margin-bottom: 10px;
+}
+
+.brand-header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #2C3E50;
+  font-weight: 600;
+}
+
+.brand-header p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #7F8C8D;
+}
+
+.input-group {
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #34495E;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #D5DBDB;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #2C3E50;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  background-color: #FAFAFA;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #009688;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1);
+}
+
+/* Estilo específico para quitar la flecha fea por defecto del navegador en el select */
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: "▼";
+  font-size: 12px;
+  color: #7F8C8D;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.input-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background-color: #009688;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+  margin-top: 10px;
+}
+
+.btn-primary:hover {
+  background-color: #00796B;
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.redirect-prompt {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+  color: #7F8C8D;
+}
+
+.redirect-prompt a {
+  color: #009688;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.redirect-prompt a:hover {
+  text-decoration: underline;
+}

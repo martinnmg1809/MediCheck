@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { RegisterComponent } from './components/register';
 import { LoginComponent } from './components/login';
 import { App } from './app';
+import { forgotComponent } from './components/forgot-password';
 
 import { ListaTomasComponent } from './components/lista-tomas.component';
 import { FormularioTomaComponent } from './components/formulario-toma.component';
@@ -27,5 +28,9 @@ export const routes: Routes = [
     {
         path: 'list',
         component: ListaTomasComponent
+    },
+    {
+        path: 'forgot-password',
+        component: forgotComponent
     }
 ];

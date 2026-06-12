@@ -1,0 +1,137 @@
+/* Importar una fuente limpia y moderna (opcional, puedes ponerlo en tu index.html general) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  /* Fondo refrescante, azul muy claro que recuerda a un entorno clínico */
+  background-color: #F0F8FF; 
+  font-family: 'Inter', sans-serif;
+  padding: 20px;
+}
+
+.login-card {
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 400px;
+  padding: 40px 30px;
+  border-radius: 16px;
+  /* Sombra muy difuminada para que parezca "flotar" suavemente */
+  box-shadow: 0 10px 25px rgba(0, 105, 140, 0.08);
+}
+
+.brand-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.med-icon {
+  width: 48px;
+  height: 48px;
+  /* Color principal de la marca: Un azul/verde médico */
+  color: #009688; 
+  margin-bottom: 10px;
+}
+
+.brand-header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #2C3E50;
+  font-weight: 600;
+}
+
+.brand-header p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #7F8C8D;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #34495E;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #D5DBDB;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #2C3E50;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  background-color: #FAFAFA;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #009688;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.forgot-link {
+  font-size: 13px;
+  color: #009688;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: #00796B;
+  text-decoration: underline;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background-color: #009688;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn-primary:hover {
+  background-color: #00796B;
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.register-prompt {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+  color: #7F8C8D;
+}
+
+.register-prompt a {
+  color: #009688;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register-prompt a:hover {
+  text-decoration: underline;
+}

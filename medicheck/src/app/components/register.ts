@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-register',
   templateUrl: './register.html', // Aquí iría tu formulario HTML
+  styleUrl: './styles/register.css', // Aquí irían tus estilos CSS
   standalone: true,
   imports: [FormsModule]
 })
