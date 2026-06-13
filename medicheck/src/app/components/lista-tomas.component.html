@@ -1,40 +1,46 @@
-<div>
-  <button (click)="irACrear()">⬅ Volver a Agregar Medicamento</button>
-  <hr>
-
-  <h2>Mi Tratamiento de Hoy</h2>
-
-  <div *ngIf="cargandoInicial">
-    <p><em>Cargando tus medicamentos... ⏳</em></p>
+<div class="contenedor-app">
+  <div class="navegacion-superior">
+    <div class="selector-dia">
+      <label>Tu horario del:</label>
+      <select class="dropdown-semanal" [(ngModel)]="diaSeleccionado" (change)="filtrarPorDia()">
+        <option *ngFor="let dia of diasSemana" [value]="dia.valor">
+          {{ dia.nombre }}
+        </option>
+      </select>
+    </div>
+    <button class="btn-circular-add" (click)="irACrear()">+</button>
   </div>
 
-  <div *ngIf="!cargandoInicial">
-    <div *ngIf="medicamentos.length === 0">
-      <p>No tienes medicamentos programados para hoy.</p>
+  <div class="timeline-container">
+    <div *ngIf="cargandoInicial" class="estado-carga">Cargando horario...</div>
+    
+    <div *ngIf="!cargandoInicial && medicamentosFiltrados.length === 0" class="sin-datos">
+      <p>No tienes medicamentos programados para este día.</p>
     </div>
 
-    <div *ngIf="medicamentos.length > 0">
-      <div *ngFor="let item of medicamentos">
-        <div>
-          <h3>{{ item.nombre_comercial }} ({{ item.principio_activo }})</h3>
-          <p>{{ item.concentracion }}</p>
-          <strong>Horario: {{ item.horario_programado }} hrs</strong>
+    <ul class="timeline" *ngIf="medicamentosFiltrados.length > 0">
+      <li class="timeline-item" *ngFor="let item of medicamentosFiltrados">
+        <div class="timeline-hora">
+          <span>{{ item.horario_programado }}</span>
         </div>
-
-        <div>
-          <ng-container *ngIf="item.verificado; else botonTomar">
-            <span>✓ Tomado a las: {{ item.fecha_real_toma | date:'HH:mm' }} hrs</span>
-          </ng-container>
-          
-          <ng-template #botonTomar>
-            <button (click)="marcarTomado(item.toma_id)">
-              Marcar como Tomado
-            </button>
-          </ng-template>
+        <div class="timeline-punto" [ngClass]="{'completado': item.verificado}"></div>
+        <div class="timeline-contenido" [ngClass]="{'tarjeta-completada': item.verificado}">
+          <div class="info-medicamento">
+            <h3>{{ item.nombre_comercial }}</h3>
+            <p class="principio">{{ item.principio_activo }} ({{ item.concentracion }})</p>
+          </div>
+          <div class="acciones-medicamento">
+            <ng-container *ngIf="item.verificado; else botonTomar">
+              <span class="etiqueta-tomado">✓ Tomado</span>
+            </ng-container>
+            <ng-template #botonTomar>
+              <button class="btn-tomar" (click)="marcarTomado(item.toma_id)">
+                Marcar Tomado
+              </button>
+            </ng-template>
+          </div>
         </div>
-        <br>
-        <hr>
-      </div>
-    </div>
+      </li>
+    </ul>
   </div>
 </div>

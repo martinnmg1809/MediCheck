@@ -1,25 +1,43 @@
-<div>
-  <button (click)="irALista()">Ir a Mi Lista de Tratamiento ➔</button>
-  <hr>
+<div class="contenedor-app">
+  <div class="header-minimal">
+    <button class="btn-text" (click)="irALista()">⬅ Volver a mi historial</button>
+  </div>
 
-  <h3>Asignar Nuevo Horario</h3>
-  
-  <label>Escribe para buscar medicamento: </label>
-  <input type="text" [(ngModel)]="filtroTexto" placeholder="Ej: Paracetamol...">
-  <br><br>
-  
-  <label>Selecciona el resultado: </label>
-  <select [(ngModel)]="medicamentoSeleccionado">
-    <option *ngFor="let med of filtrarMedicamentos()" [value]="med.id">
-      {{ med.nombre_comercial }} ({{ med.principio_activo }} - {{ med.concentracion }})
-    </option>
-  </select>
-  <br><br>
-  
-  <label>Elige la hora: </label>
-  <input type="time" [(ngModel)]="nuevoHorario">
-  
-  <button (click)="crearHorario()" [disabled]="agregando">
-    {{ agregando ? 'Guardando...' : 'Agregar al Tratamiento' }}
-  </button>
+  <div class="card-formulario">
+    <h1 class="titulo-form">Nuevo Tratamiento</h1>
+    <p class="subtitulo-form">Configura los detalles de tu medicación</p>
+
+    <div class="campo-grupo">
+      <label>Medicamento</label>
+      <input type="text" class="input-moderno mb-2" [(ngModel)]="filtroTexto" placeholder="Buscar nombre...">
+      
+      <select class="select-moderno" [(ngModel)]="medicamentoSeleccionado">
+        <option value="" disabled selected>Selecciona el resultado</option>
+        <option *ngFor="let med of filtrarMedicamentos()" [value]="med.id">
+          {{ med.nombre_comercial }} ({{ med.concentracion }})
+        </option>
+      </select>
+    </div>
+
+    <div class="fila-campos">
+      <div class="campo-grupo">
+        <label>Primera Toma</label>
+        <input type="time" class="input-moderno" [(ngModel)]="nuevoHorario">
+      </div>
+      
+      <div class="campo-grupo">
+        <label>Cada (horas)</label>
+        <input type="number" class="input-moderno" [(ngModel)]="frecuencia" placeholder="Ej: 8" min="1">
+      </div>
+    </div>
+
+    <div class="campo-grupo">
+      <label>Durante (días)</label>
+      <input type="number" class="input-moderno" [(ngModel)]="duracionDias" placeholder="Ej: 7" min="1">
+    </div>
+
+    <button class="btn-primario" (click)="crearTratamiento()" [disabled]="agregando">
+      {{ agregando ? 'Guardando...' : 'Comenzar Tratamiento' }}
+    </button>
+  </div>
 </div>

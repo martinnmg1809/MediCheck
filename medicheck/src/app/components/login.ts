@@ -27,7 +27,7 @@ export class LoginComponent {
                 const idDelUsuario = res.user?.id || res.usuario?.id || res.id;
                 
                 if (idDelUsuario) {
-                    localStorage.setItem('userId', idDelUsuario.toString());
+                    localStorage.setItem('user_id', idDelUsuario.toString());
                 }
 
                 alert('Inicio de sesión exitoso');

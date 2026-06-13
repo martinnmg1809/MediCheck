@@ -1,0 +1,22 @@
+:host { display: block; background-color: #f0f2f5; min-height: 100vh; }
+.contenedor-app { max-width: 400px; margin: 0 auto; background: white; min-height: 100vh; padding: 20px; box-shadow: 0px 0px 20px rgba(0,0,0,0.1); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; box-sizing: border-box; }
+.navegacion-superior { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; }
+.selector-dia label { display: block; font-size: 13px; color: #8e8e93; margin-bottom: 5px; }
+.dropdown-semanal { background: #f2f2f7; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 16px; color: #1c1c1e; outline: none; }
+.btn-circular-add { width: 40px; height: 40px; border-radius: 50%; background: #007aff; color: white; border: none; font-size: 24px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,122,255,0.3); }
+
+/* Timeline UI */
+.timeline { list-style: none; padding: 0; margin: 0; position: relative; }
+.timeline::before { content: ''; position: absolute; top: 0; bottom: 0; left: 45px; width: 2px; background-color: #e5e5ea; }
+.timeline-item { display: flex; align-items: stretch; margin-bottom: 20px; position: relative; }
+.timeline-hora { width: 35px; padding-right: 15px; text-align: right; font-weight: 700; color: #3a3a3c; padding-top: 15px; font-size: 14px; }
+.timeline-punto { width: 14px; height: 14px; background-color: #fff; border: 3px solid #007aff; border-radius: 50%; position: absolute; left: 39px; top: 15px; z-index: 1; }
+.timeline-punto.completado { border-color: #34c759; background-color: #34c759; }
+.timeline-contenido { margin-left: 20px; background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 15px; flex-grow: 1; border-left: 5px solid #007aff; display: flex; flex-direction: column; gap: 12px; }
+.timeline-contenido.tarjeta-completada { border-left-color: #34c759; background: #f2fff4; }
+.info-medicamento h3 { margin: 0 0 4px 0; font-size: 18px; color: #1c1c1e; }
+.principio { margin: 0; font-size: 14px; color: #8e8e93; }
+.acciones-medicamento { width: 100%; }
+.btn-tomar { width: 100%; background-color: #007aff; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 15px; }
+.etiqueta-tomado { display: block; text-align: center; color: #34c759; font-weight: 600; font-size: 14px; padding: 10px 0; background-color: rgba(52, 199, 89, 0.1); border-radius: 8px; }
+.estado-carga, .sin-datos { text-align: center; padding: 30px 20px; color: #8e8e93; font-size: 15px; }
