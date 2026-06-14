@@ -1,15 +1,15 @@
 import { Routes } from '@angular/router';
-import { RegisterComponent } from './components/register';
-import { LoginComponent } from './components/login';
+import { RegisterComponent } from './components/register/register';
+import { LoginComponent } from './components/login/login';
 import { App } from './app';
-import { forgotComponent } from './components/forgot-password';
-
-import { ListaTomasComponent } from './components/lista-tomas.component';
-import { FormularioTomaComponent } from './components/formulario-toma.component';
+import { ForgotComponent } from './components/forgot-password/forgot-password';
+import { HomeComponent } from './components/home/home';
+import { ListaTomasComponent } from './components/lista-tomas/lista-tomas.component';
+import { FormularioTomaComponent } from './components/formulario-toma/formulario-toma.component';
 export const routes: Routes = [
     {
         path: '',
-        component: App,
+        component: HomeComponent,
         pathMatch: 'full'
     },
     { 
@@ -31,6 +31,6 @@ export const routes: Routes = [
     },
     {
         path: 'forgot-password',
-        component: forgotComponent
+        component: ForgotComponent
     }
 ];

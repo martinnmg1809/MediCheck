@@ -1,0 +1,43 @@
+<nav class="navbar">
+    <div class="navbar-logo header-logo">
+        <a routerLink="/">
+            
+            <img src="/logo.png" alt="MediCheck Logo" height="60" style="height: 60px; width: auto; margin: 0 auto;"
+                class="logo-img">
+            <span class="logo-text">MediCheck</span>
+        </a>
+    </div>
+
+    <button class="navbar-toggle" (click)="toggleMenu()" aria-label="Menu">
+        <span class="bar" [class.open]="isMenuOpen"></span>
+        <span class="bar" [class.open]="isMenuOpen"></span>
+        <span class="bar" [class.open]="isMenuOpen"></span>
+    </button>
+
+    <div class="navbar-menu" [class.show]="isMenuOpen">
+
+        <div class="navbar-logo menu-inside-logo">
+            
+            <span class="logo-text">MediCheck</span>
+        </div>
+
+        <ul class="navbar-links">
+            <li>
+                <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                    (click)="closeMenu()">Inicio</a>
+            </li>
+            <li>
+                <a routerLink="/list" routerLinkActive="active" (click)="closeMenu()">Lista de Tomas</a>
+            </li>
+            <li>
+                <a routerLink="/create" routerLinkActive="active" (click)="closeMenu()">Crear Toma</a>
+            </li>
+        </ul>
+
+        <div class="navbar-auth">
+            <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()" class="btn-login">Iniciar Sesión</a>
+            <a routerLink="/register" routerLinkActive="active" (click)="closeMenu()"
+                class="btn-register">Registrarse</a>
+        </div>
+    </div>
+</nav>

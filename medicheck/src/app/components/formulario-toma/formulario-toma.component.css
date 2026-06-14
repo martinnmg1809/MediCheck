@@ -1,0 +1,103 @@
+/* --- CONTENEDOR PRINCIPAL (HOST) --- */
+:host { 
+  display: flex; 
+  justify-content: center; /* Centra la tarjeta en pantallas grandes */
+  align-items: flex-start; 
+  background-color: #f0f2f5; 
+  min-height: 100%; /* Se adapta al alto disponible sin romper el scroll global */
+  width: 100%;
+  padding: 2rem 1rem; /* Espacio para que respire en PC/Tablets */
+  box-sizing: border-box;
+}
+
+/* --- TARJETA DEL FORMULARIO --- */
+.contenedor-app { 
+  width: 100%;
+  max-width: 100%; /* <-- Quitamos el límite de 500px, ahora ocupa toda la pantalla */
+  background: white; 
+  padding: 30px; 
+  border-radius: 16px; 
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+  font-family: -apple-system, system-ui, sans-serif; 
+  box-sizing: border-box; 
+}
+
+.header-minimal { margin-bottom: 20px; }
+.btn-text { background: none; border: none; color: #155d6a; font-size: 16px; cursor: pointer; padding: 0; }
+
+/* --- TIPOGRAFÍA --- */
+.titulo-form { font-size: 26px; margin: 0 0 5px 0; color: #1c1c1e; }
+.subtitulo-form { color: #8e8e93; margin-bottom: 25px; font-size: 15px; }
+
+/* --- INPUTS Y CAMPOS --- */
+.campo-grupo { margin-bottom: 20px; }
+.campo-grupo label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #333; }
+.input-moderno, .select-moderno { 
+  width: 100%; 
+  padding: 14px; 
+  border-radius: 12px; 
+  border: 1px solid #e5e5ea; 
+  background: #f9f9f9; 
+  font-size: 16px; 
+  box-sizing: border-box; 
+  transition: border-color 0.3s;
+}
+
+.input-moderno:focus, .select-moderno:focus {
+  outline: none;
+  border-color: #155d6a; /* Feedback visual al hacer clic usando tu color original */
+}
+
+.mb-2 { margin-bottom: 10px; }
+
+/* Grid para los campos paralelos */
+.fila-campos { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 15px; 
+}
+
+/* --- BOTÓN PRINCIPAL --- */
+.btn-primario { 
+  width: 100%; 
+  background: #155d6a; 
+  color: white; 
+  border: none; 
+  padding: 16px; 
+  border-radius: 12px; 
+  font-size: 17px; 
+  font-weight: 600; 
+  margin-top: 10px; 
+  cursor: pointer; 
+  transition: opacity 0.2s; 
+}
+.btn-primario:active { opacity: 0.7; }
+.btn-primario:disabled { background: #a2c8f2; cursor: not-allowed; }
+
+/* ==========================================================================
+   DISEÑO RESPONSIVO (MAGIA PARA MÓVILES)
+   ========================================================================== */
+
+/* 1. Celulares y Tablets pequeñas (< 600px) */
+@media (max-width: 600px) {
+  :host {
+    padding: 0; /* Quitamos el padding exterior para que llene la pantalla */
+    background-color: white; /* Camuflamos el fondo con la tarjeta */
+  }
+
+  .contenedor-app {
+    max-width: 100%; /* Ocupa todo el ancho */
+    border-radius: 0; /* Quitamos las curvas en las esquinas */
+    box-shadow: none; /* Quitamos la sombra, ahora es nativo */
+    min-height: 100%;
+    padding: 20px 15px; /* Ajustamos márgenes internos para celular */
+  }
+}
+
+/* 2. Celulares extremadamente estrechos (< 380px) */
+@media (max-width: 380px) {
+  .fila-campos { 
+    grid-template-columns: 1fr; /* Ponemos la hora arriba y los días abajo para que no se aplasten */
+    gap: 10px; 
+  }
+}

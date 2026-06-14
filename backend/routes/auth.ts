@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import bcrypt from 'bcrypt'; // Importamos la librería de encriptación
 import { sql } from '../db/database'; 
+// Use require to avoid missing types error for 'nodemailer' when @types/nodemailer is not installed
+const nodemailer = require('nodemailer');
+import crypto from 'crypto'; 
 
 const router = Router();
 
@@ -70,13 +73,63 @@ router.post('/login', async (req, res) => {
     }
 });
 
-//Agregar recuperar contraseña
-router.post('/recover-password', async (req, res) => {
+router.post('/forgot-password', async (req, res) => {
     try {
-        //logica manejo de contraseña nueva
-    } catch (error: any) {
-        res.status(500).json({ error: "Error interno del servidor", details: error.message });
+        const { email } = req.body;
+
+        // 1. Verificar si existe
+        const userResult = await sql`SELECT id FROM users WHERE email = ${email}`;
+        if (userResult.length === 0) {
+            return res.status(200).json({ message: "Si el correo existe, se enviará un enlace." });
+        }
+
+        // 2. Generar token de seguridad (requiere: import crypto from 'crypto';)
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const tokenExpires = Date.now() + 3600000; // 1 hora
+
+        await sql`
+            UPDATE users 
+            SET reset_token = ${resetToken}, reset_token_expires = ${tokenExpires} 
+            WHERE email = ${email}
+        `;
+
+        //Chequeo de si las variables de inicio de sesion se cargan correctamente para enviar el correo
+        console.log("Intentando enviar correo desde:", process.env.EMAIL_USER);
+        console.log("Contraseña cargada:", process.env.EMAIL_PASS ? "SÍ" : "NO");
+
+
+        // 4. Enviar el correo (requiere configurar nodemailer)
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+        const resetLink = `http://localhost:4200/form-new-password?token=${resetToken}`;
+
+        await transporter.sendMail({
+            from: `"Medicheck Soporte" <${process.env.EMAIL_USER}>`,
+            to: email, // Aquí es donde viaja tu correo temporal válido
+            subject: "Recuperación de Contraseña - Medicheck",
+            text: `Haz clic en el siguiente enlace para cambiar tu contraseña: ${resetLink}`
+        });
+
+        res.status(200).json({ message: "Correo de recuperación enviado." });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al procesar la solicitud." });
     }
+});
+
+
+
+router.post('/reset-password', async (req, res) => {
+
+
+
+
 });
 
 export default router;

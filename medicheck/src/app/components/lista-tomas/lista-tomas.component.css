@@ -1,0 +1,205 @@
+/* --- CONTENEDOR PRINCIPAL (HOST) --- */
+:host { 
+  display: flex; 
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #f0f2f5; 
+  min-height: 100%; 
+  width: 100%;
+  padding: 2rem 1rem; 
+  box-sizing: border-box; 
+}
+
+/* --- CONTENEDOR CENTRAL --- */
+.contenedor-app { 
+  width: 100%;
+  max-width: 100%; /* <-- ¡Aquí está la magia! Quitamos el límite de 650px */
+  background: white; 
+  min-height: 100vh; 
+  padding: 30px; 
+  border-radius: 16px; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+  box-sizing: border-box; 
+}
+
+/* --- NAVEGACIÓN SUPERIOR --- */
+.navegacion-superior { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 30px; 
+  padding-bottom: 15px; 
+  border-bottom: 1px solid #f0f0f0; 
+}
+
+.selector-dia label { 
+  display: block; 
+  font-size: 13px; 
+  color: #8e8e93; 
+  margin-bottom: 5px; 
+}
+
+.dropdown-semanal { 
+  background: #f2f2f7; 
+  border: none; 
+  padding: 8px 12px; 
+  border-radius: 8px; 
+  font-weight: 600; 
+  font-size: 16px; 
+  color: #1c1c1e; 
+  outline: none; 
+  cursor: pointer;
+}
+
+.btn-circular-add { 
+  width: 40px; 
+  height: 40px; 
+  border-radius: 50%; 
+  background: #155d6a; 
+  color: white; 
+  border: none; 
+  font-size: 24px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  cursor: pointer; 
+  box-shadow: 0 4px 10px rgba(0,122,255,0.3); 
+  flex-shrink: 0; /* Evita que el botón se deforme si falta espacio */
+}
+
+/* --- TIMELINE UI (Línea de tiempo) --- */
+.timeline { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0; 
+  position: relative; 
+}
+
+.timeline::before { 
+  content: ''; 
+  position: absolute; 
+  top: 0; 
+  bottom: 0; 
+  left: 45px; 
+  width: 2px; 
+  background-color: #e5e5ea; 
+}
+
+.timeline-item { 
+  display: flex; 
+  align-items: stretch; 
+  margin-bottom: 20px; 
+  position: relative; 
+  width: 100%; /* Obliga al ítem a usar todo el ancho de la pantalla */
+}
+
+.timeline-hora { 
+  width: 35px; 
+  padding-right: 15px; 
+  text-align: right; 
+  font-weight: 700; 
+  color: #3a3a3c; 
+  padding-top: 15px; 
+  font-size: 14px; 
+  flex-shrink: 0; /* Asegura que la hora no se aplaste */
+  box-sizing: content-box;
+}
+
+.timeline-punto { 
+  width: 14px; 
+  height: 14px; 
+  background-color: #fff; 
+  border: 3px solid #155d6a; 
+  border-radius: 50%; 
+  position: absolute; 
+  left: 39px; 
+  top: 15px; 
+  z-index: 1; 
+  box-sizing: border-box;
+}
+
+.timeline-punto.completado { 
+  border-color: #34c759; 
+  background-color: #34c759; 
+}
+
+/* --- TARJETA DE LA TOMA --- */
+.timeline-contenido { 
+  margin-left: 20px; 
+  background: #fff; 
+  border: 1px solid #e5e5ea; 
+  border-radius: 12px; 
+  padding: 15px; 
+  flex-grow: 1; /* <-- Esto empuja la tarjeta hasta el borde derecho */
+  border-left: 5px solid #155d6a; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+  width: 100%;
+  box-sizing: border-box; 
+}
+
+.timeline-contenido.tarjeta-completada { 
+  border-left-color: #34c759; 
+  background: #f2fff4; 
+}
+
+.info-medicamento h3 { margin: 0 0 4px 0; font-size: 18px; color: #1c1c1e; }
+.principio { margin: 0; font-size: 14px; color: #8e8e93; }
+
+.acciones-medicamento { width: 100%; }
+
+.btn-tomar { 
+  width: 100%; 
+  background-color: #155d6a; 
+  color: white; 
+  border: none; 
+  padding: 12px; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  font-weight: 600; 
+  font-size: 15px; 
+  transition: opacity 0.2s;
+}
+
+.btn-tomar:active { opacity: 0.7; }
+
+.etiqueta-tomado { 
+  display: block; 
+  width: 100%;
+  text-align: center; 
+  color: #34c759; 
+  font-weight: 600; 
+  font-size: 14px; 
+  padding: 10px 0; 
+  background-color: rgba(52, 199, 89, 0.1); 
+  border-radius: 8px; 
+  box-sizing: border-box;
+}
+
+.estado-carga, .sin-datos { text-align: center; padding: 30px 20px; color: #8e8e93; font-size: 15px; }
+
+
+/* ==========================================================================
+   DISEÑO RESPONSIVO (MÓVILES)
+   ========================================================================== */
+@media (max-width: 600px) {
+  :host {
+    padding: 0;
+    background-color: white; 
+  }
+
+  .contenedor-app {
+    max-width: 100%; /* Rompe el límite, ocupa toda la pantalla */
+    border-radius: 0;
+    box-shadow: none;
+    padding: 20px 15px; /* Ajuste de los bordes laterales para celulares */
+  }
+
+  /* Reducimos ligeramente el margen de la línea de tiempo para ganar espacio para la tarjeta */
+  .timeline-contenido {
+    margin-left: 15px;
+    padding: 12px;
+  }
+}

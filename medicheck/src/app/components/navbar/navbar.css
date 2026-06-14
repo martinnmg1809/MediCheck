@@ -1,0 +1,201 @@
+/* --- COMPORTAMIENTO EN ESCRITORIO --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #FFFFFF;
+  padding: 0.75rem 2rem;
+  /* Sombra difuminada suave, idéntica a la de tu login-card */
+  box-shadow: 0 4px 15px rgba(0, 105, 140, 0.08);
+  font-family: 'Inter', sans-serif; /* Tipografía oficial */
+  position: relative;
+  z-index: 1000;
+}
+
+.navbar-logo a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.logo-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2C3E50; /* Color oscuro de tus títulos (h1) */
+}
+
+.navbar-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;
+  margin-left: 3rem;
+}
+
+.menu-inside-logo {
+  display: none;
+}
+
+.navbar-links {
+  display: flex;
+  list-style: none; 
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links a, .btn-login {
+  color: #34495E; /* Color de las etiquetas (labels) de tus inputs */
+  text-decoration: none; 
+  font-weight: 500;
+  padding: 0.5rem 0;
+  transition: color 0.3s ease;
+}
+
+/* Efecto hover con tu Verde/Azul médico */
+.navbar-links a:hover, .btn-login:hover {
+  color: #009688; 
+}
+
+/* Enlace activo */
+.navbar-links a.active {
+  color: #009688;
+  font-weight: 600;
+  border-bottom: 2px solid #009688;
+}
+
+.navbar-auth {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Botón Registrarse clonado de tu .btn-primary */
+.btn-register {
+  background-color: #009688;
+  color: white !important;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px; /* Redondeo de 8px del login */
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.btn-register:hover {
+  background-color: #00796B;
+}
+
+.btn-register:active {
+  transform: translateY(1px);
+}
+
+.navbar-toggle {
+  display: none;
+}
+
+/* --- MÓVILES Y TABLETS (< 768px) --- */
+@media (max-width: 768px) {
+  .navbar { padding: 0.75rem 1.25rem; }
+
+  .navbar-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .navbar-toggle .bar {
+    width: 100%;
+    height: 2px;
+    background-color: #2C3E50; /* Oscuro para contraste */
+    transition: all 0.3s ease;
+    display: block;
+  }
+
+  .navbar-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #FFFFFF;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0;
+    padding: 1.5rem;
+    /* Sombra profunda al desplegar y borde sutil igual a tus inputs */
+    box-shadow: 0 10px 25px rgba(0, 105, 140, 0.08);
+    border-top: 1px solid #D5DBDB; 
+    display: none;
+    box-sizing: border-box;
+  }
+
+  .navbar-menu.show { display: flex; }
+
+  .navbar-links {
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .navbar-links a.active {
+    border-bottom: none;
+    border-left: 3px solid #009688;
+    padding-left: 0.5rem !important;
+  }
+
+  .navbar-auth {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; 
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .btn-login, .btn-register {
+    width: auto; 
+    box-sizing: border-box; 
+    text-align: center;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Botón de inicio de sesión estilo contorno secundario */
+  .btn-login {
+    border: 1px solid #D5DBDB; 
+    border-radius: 8px;
+    color: #2C3E50;
+  }
+}
+
+/* --- CELULARES ESTRECHOS (< 480px) --- */
+@media (max-width: 480px) {
+  /* 1. Mantenemos el logo principal siempre visible */
+  .header-logo { 
+    display: flex !important; 
+  }
+
+  /* 2. Alineamos el logo a la izquierda y el botón a la derecha */
+  .navbar { 
+    justify-content: space-between; 
+    padding: 0.75rem 1rem; 
+  }
+
+  /* 3. Achicamos ligeramente el logo y el texto para que no aprieten el botón de 3 líneas */
+  .logo-img {
+    height: 35px !important; 
+  }
+  
+  .logo-text {
+    font-size: 1.1rem;
+  }
+
+  /* 4. Como el logo de arriba ya no desaparece, ocultamos el duplicado de adentro del menú */
+  .menu-inside-logo {
+    display: none !important;
+  }
+}

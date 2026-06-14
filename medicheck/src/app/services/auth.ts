@@ -14,8 +14,12 @@ export class AuthService {
   register(userData: User): Observable<any> {
     return this.http.post(`${this.API_URL}/register`, userData);
   }
-  
+
   login(credentials: Pick<User, 'email' | 'password'>): Observable<any> {
     return this.http.post(`${this.API_URL}/login`, credentials);
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/forgot-password`, { email });
   }
 }
