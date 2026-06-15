@@ -83,6 +83,10 @@ router.get('/usuario/:user_id/historial', async (req: Request, res: Response): P
             FROM tomas_medicamentos tm
             JOIN medicamentos m ON tm.medicamento_id = m.id
             WHERE tm.user_id = ${user_id}
+              -- 👇 FILTRO DE RANGO SEMANAL 👇
+              -- Trae desde las 00:00:00 de hoy en Chile hasta 7 días más adelante
+              AND tm.horario::timestamptz AT TIME ZONE 'America/Santiago' >= (CURRENT_DATE AT TIME ZONE 'America/Santiago')
+              AND tm.horario::timestamptz AT TIME ZONE 'America/Santiago' < (CURRENT_DATE + INTERVAL '7 days')
             ORDER BY tm.horario ASC;
         `;
         

@@ -1,3 +1,5 @@
+
+<body>
 <div class="contenedor-app">
   <div class="navegacion-superior">
     <div class="selector-dia">
@@ -8,16 +10,28 @@
         </option>
       </select>
     </div>
+    
+     <script>
+        console.log("Bandera 0");
+</script>
     <button class="btn-circular-add" (click)="irACrear()">+</button>
   </div>
 
   <div class="timeline-container">
+
     <div *ngIf="cargandoInicial" class="estado-carga">Cargando horario...</div>
-    
+    <script>
+        console.log("Bandera 1");
+</script>
     <div *ngIf="!cargandoInicial && medicamentosFiltrados.length === 0" class="sin-datos">
+      <script>
+        console.log("Bandera 2");
+</script>
       <p>No tienes medicamentos programados para este día.</p>
     </div>
-
+<script>
+        console.log("Bandera 3");
+</script>
     <ul class="timeline" *ngIf="medicamentosFiltrados.length > 0">
       <li class="timeline-item" *ngFor="let item of medicamentosFiltrados">
         <div class="timeline-hora">
@@ -44,3 +58,4 @@
     </ul>
   </div>
 </div>
+</body>
