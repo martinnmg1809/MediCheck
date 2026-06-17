@@ -29,9 +29,7 @@ export class LoginComponent {
                 if (res.token) {
                     localStorage.setItem('token', res.token);
                 }
-
-                // 4. Guardamos el user_id. 
-                // Ajusta 'res.usuario.id' o 'res.id' dependiendo de cómo tu backend envía los datos del usuario.
+                
                 if (res.usuario && res.usuario.id) {
                     localStorage.setItem('user_id', res.usuario.id.toString());
                 } else if (res.user && res.user.id) {
@@ -42,8 +40,9 @@ export class LoginComponent {
 
                 alert('Inicio de sesión exitoso');
                 
-                // 5. Redirigimos al usuario a la vista de agregar medicamentos
-                this.router.navigate(['/agregar-medicamento']);
+                localStorage.setItem('user_name', JSON.stringify(res.user())); 
+
+                this.router.navigate(['/']);
             },
             error: (err) => {
                 console.error('Error al iniciar sesión', err);

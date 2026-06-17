@@ -10,8 +10,16 @@ se realiza la mayor parte del trabajo
 gemini me explico que esto era por un tema de seguridad en el que no se 
 comprometen la integridad de la base de datos
 
-Hecho:
 
-Por hacer (V):
-logica de login/register/recuperar contraseña (en carpeta backend)
-interfaz para procesar los datos de login/register/recuperar contraseña (en carpeta medicheck)
+
+
+comandos utiles
+app{
+    lanzar app: ng serve -o
+    build: ng build
+}
+
+backend{
+    lanzar backend: npx ts-node index.ts;
+    instalar dependencias: npm install
+}

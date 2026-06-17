@@ -108,13 +108,7 @@ export class ListaTomasComponent implements OnInit {
   
 
     if (!this.diaSeleccionado && this.diasSemana.length > 0) {
-      
       this.diaSeleccionado = this.diasSemana[0].valor;
-    }
-
-    // Muestra una muestra de cómo viene la fecha desde la base de datos si es que hay datos
-    if (this.medicamentos.length > 0) {
-      
     }
 
     // 2. Ejecutar el filtro

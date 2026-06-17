@@ -22,4 +22,12 @@ export class AuthService {
   forgotPassword(email: string): Observable<any> {
     return this.http.post(`${this.API_URL}/forgot-password`, { email });
   }
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/reset-password`, { token, newPassword });
+  }
+
+  getMedications(userId: string): Observable<any> {
+    return this.http.get(`${this.API_URL}/URLDETOMAS/${userId}`);
+  }
 }
