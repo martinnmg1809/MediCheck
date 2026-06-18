@@ -27,6 +27,7 @@ export class RegisterComponent {
       next: (res) => {
         console.log('¡Éxito!', res);
         alert('Usuario registrado correctamente');
+        
       },
       error: (err) => {
         console.error('Error al registrar', err);

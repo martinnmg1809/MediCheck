@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 // Importa tu servicio para luego poder hacer la petición HTTP
 import { AuthService } from '../../services/auth'; 
@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
   
   TratamientosActivos: any[] = []; 
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.username = localStorage.getItem('user_name');
@@ -29,7 +29,9 @@ export class HomeComponent implements OnInit {
       this.authService.getTreatments(this.userId).subscribe({
         next: (res)=>{
           this.TratamientosActivos = res.treatments;
+          console.log(res)
           console.log('Tratamientos obtenidos correctamente.')
+          this.cdr.detectChanges();
         },
         error: (err)=>{
           console.error('Error al obtener tratamientos', err)
@@ -37,5 +39,10 @@ export class HomeComponent implements OnInit {
         }
       });
     }
-  }  
+  }
+  
+  OnLogout(){
+    localStorage.clear();
+    this.router.navigate(['/login']);
+  }
 }

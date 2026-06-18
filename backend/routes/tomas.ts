@@ -5,10 +5,28 @@ const router = Router();
 
 // 1. REGISTRAR UN NUEVO TRATAMIENTO (POST /api/tomas)
 // Calcula y genera ráfagas de tomas automáticas proyectadas a futuro en la BDD
+// 1. REGISTRAR UN NUEVO TRATAMIENTO Y SUS TOMAS (POST /api/tomas)
 router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { user_id, medicamento_id, horario_inicio, frecuencia_horas, duracion_dias} = req.body; 
+        // Notar que ahora recibimos "tratamiento" (el texto) en lugar del id
+        const { user_id, medicamento_id, tratamiento, horario_inicio, frecuencia_horas, duracion_dias } = req.body; 
         
+        if (!tratamiento) {
+            res.status(400).json({ error: "El nombre del tratamiento es requerido." });
+            return;
+        }
+
+        // --- PASO 1: CREAR EL TRATAMIENTO (FUERA DEL CICLO) ---
+        const tratamientoResult = await sql`
+            INSERT INTO tratamientos (user_id, nombre, activo)
+            VALUES (${user_id}, ${tratamiento}, true)
+            RETURNING id
+        `;
+        
+        // Extraemos el ID real que Neon acaba de generar
+        const idTratamientoValido = tratamientoResult[0].id;
+
+        // --- PASO 2: CONFIGURAR LA RÁFAGA DE TOMAS ---
         const tomasPorDia = 24 / frecuencia_horas;
         const tomasTotales = tomasPorDia * duracion_dias;
 
@@ -18,14 +36,14 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
 
         const queries = [];
 
+        // --- PASO 3: INSERTAR LAS TOMAS USANDO EL ID GENERADO ---
         for (let i = 0; i < tomasTotales; i++) {
             const fechaToma = new Date(fechaActual);
             const fechaCompleta = fechaToma.toISOString();
 
-            // Insertamos forzando a timestamptz para evitar errores de longitud o tipo de dato texto
             const query = sql`
-                INSERT INTO tomas_medicamentos (user_id, medicamento_id, horario) 
-                VALUES (${user_id}, ${medicamento_id}, ${fechaCompleta}::timestamptz)
+                INSERT INTO tomas_medicamentos (user_id, medicamento_id, tratamiento_id, horario) 
+                VALUES (${user_id}, ${medicamento_id}, ${idTratamientoValido}, ${fechaCompleta}::timestamptz)
             `;
             queries.push(query);
 
@@ -33,12 +51,14 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
         }
         
         await Promise.all(queries);
-        res.status(201).json({ message: "Calendario de tratamiento programado con éxito" });
+        res.status(201).json({ message: "Tratamiento y tomas programadas con éxito" });
+
     } catch (error) {
         console.error("Error crítico en POST /api/tomas:", error);
         res.status(500).json({ error: "Error interno al programar el tratamiento" });
     }
 });
+
 
 // 2. MARCAR MEDICAMENTO COMO CONSUMIDO (PUT /api/tomas/verificar/:id)
 router.put('/verificar/:id', async (req: Request, res: Response): Promise<void> => {

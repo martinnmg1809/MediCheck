@@ -31,4 +31,8 @@ export class AuthService {
   getTreatments(userId: string): Observable<any> {
     return this.http.get(`${this.API_URL}/treatments/${userId}`);
   }
+
+  logOut(userId: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/logout/`, userId);
+  }
 }

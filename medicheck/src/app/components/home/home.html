@@ -1,1 +1,51 @@
-<h1>Bienvenido a MediCheck</h1>
+<div class="dashboard-container">
+  
+  <header class="dashboard-header">
+    
+    <div class="user-controls">
+      <span class="welcome-text">Hola, <strong>{{ username }}</strong></span>
+      <button class="btn-logout" (click)="OnLogout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="dashboard-content">
+    
+    <div class="section-header">
+      <div>
+        <h3>Tus Tratamientos Activos</h3>
+        <p class="subtitle">Monitorea tu progreso y mantén tu salud al día.</p>
+      </div>
+      <button class="btn-primary" href="/create">+ Nuevo Tratamiento</button>
+    </div>
+
+    <div *ngIf="TratamientosActivos.length === 0" class="empty-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#bdc3c7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+      </svg>
+      <p>No tienes tratamientos activos en este momento.</p>
+    </div>
+
+    <div class="treatments-grid" *ngIf="TratamientosActivos.length > 0">
+      <div class="treatment-card" *ngFor="let tratamiento of TratamientosActivos">
+        
+        <div class="card-header">
+          <div class="icon-wrapper">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#009688" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.5 20.5 7 17l-3.5 3.5a2.12 2.12 0 0 1-3-3l3.5-3.5L.5 10.5a2.12 2.12 0 0 1 3-3l3.5 3.5L10.5.5a2.12 2.12 0 0 1 3 3l-3.5 3.5L13.5 10.5a2.12 2.12 0 0 1-3 3z"></path>
+              <path d="m23.5 10.5-3.5-3.5L23.5 3.5a2.12 2.12 0 0 0-3-3l-3.5 3.5L13.5.5a2.12 2.12 0 0 0-3 3l3.5 3.5L10.5 10.5a2.12 2.12 0 0 0 3 3l3.5-3.5L20.5 13.5a2.12 2.12 0 0 0 3-3z"></path>
+            </svg>
+          </div>
+          <span class="badge active">En curso</span>
+        </div>
+
+        <div class="card-body">
+          <h4>{{ tratamiento.nombre }}</h4>
+          <p class="start-date">Iniciado: {{ tratamiento.fecha_inicio | date:'dd/MM/yyyy' }}</p>
+        </div>
+        
+      </div>
+    </div>
+
+  </main>
+</div>

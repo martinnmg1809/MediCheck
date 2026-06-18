@@ -4,12 +4,48 @@ import { sql } from '../db/database';
 // Use require to avoid missing types error for 'nodemailer' when @types/nodemailer is not installed
 const nodemailer = require('nodemailer');
 import crypto from 'crypto'; 
+import fs from 'fs';
+import path from 'path';
+
 
 const router = Router();
+
+
+let palabrasBaneadas: string[] = [];
+
+try{
+    const ruta = path.join(__dirname, 'palabrasBAN.txt')
+    const contenido = fs.readFileSync(ruta, "utf-8") 
+
+    palabrasBaneadas = contenido
+    .split(/\r?\n/)
+    .map(palabra => palabra.trim().toLowerCase())
+    .filter(palabra=>palabra.length>0)
+
+}
+catch (error){
+    console.error("Aviso: No se pudo cargar el archivo de palabras baneadas.", error);
+}
+
+function baneoPalabras (texto: string): Boolean{
+    if(!texto){
+        return false;
+    }
+    const textoMinusculas = texto.toLowerCase()
+    return palabrasBaneadas.some(palabra=>textoMinusculas.includes(palabra));
+}
 
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
+        
+
+        if (baneoPalabras(name)) {
+            res.status(400).json({ 
+                error: "El nombre de usuario contiene términos no permitidos o reservados por el sistema." 
+            });
+            return; // Bloquea la inserción y termina la petición aquí mismo
+        }
 
         // Encriptar la contraseña (hashing)
         const saltRounds = 10;
@@ -27,6 +63,7 @@ router.post('/register', async (req, res) => {
             message: "Usuario creado con éxito", 
             user: newUser 
         });
+
 
     } catch (error: any) {
         console.error('Error en el registro:', error);
@@ -177,6 +214,17 @@ router.get('/treatments/:userId', async (req, res) => {
         res.status(500).json({ error: "Error al procesar la solicitud." });
     }
 
+});
+
+router.post('/logout', async (req, res) => {
+    try{
+        const userId = req.body;
+
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({error: "Error al cerrar sesión"})
+    }
 });
 
 export default router;

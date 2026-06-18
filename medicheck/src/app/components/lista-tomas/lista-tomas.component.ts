@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core'; // <-- 1. Añadimos Inject y PLATFORM_ID
+import { Component, OnInit, Inject, PLATFORM_ID,  ChangeDetectorRef  } from '@angular/core'; // <-- 1. Añadimos Inject y PLATFORM_ID
 import { CommonModule, isPlatformBrowser } from '@angular/common'; // <-- 2. Añadimos isPlatformBrowser
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -24,7 +24,8 @@ export class ListaTomasComponent implements OnInit {
   constructor(
     private http: HttpClient, 
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -96,6 +97,7 @@ export class ListaTomasComponent implements OnInit {
 
         this.filtrarPorDia(); 
         this.cargandoInicial = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar el historial:', err);

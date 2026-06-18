@@ -7,12 +7,17 @@ import { HomeComponent } from './components/home/home';
 import { ListaTomasComponent } from './components/lista-tomas/lista-tomas.component';
 import { FormularioTomaComponent } from './components/formulario-toma/formulario-toma.component';
 import { ResetComponent } from './components/formulario-reset-password/reset-password';
-import { profile } from 'console';
+import { authGuard } from './guard/guard';
 export const routes: Routes = [
     {
-        path: '', //RUTA RAIZ, equivalente al perfil
-        component: HomeComponent,
+        path: '',
+        redirectTo: 'home',
         pathMatch: 'full'
+    },
+    {
+        path: 'home', 
+        component: HomeComponent,
+        canActivate: [authGuard]
     },
     { 
         path : 'register', 
@@ -22,7 +27,6 @@ export const routes: Routes = [
         path : 'login',
         component: LoginComponent
     },
-    // 2. AGREGAMOS LA RUTA '/crear'
     {
         path: 'create',
         component: FormularioTomaComponent

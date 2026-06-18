@@ -20,29 +20,27 @@ export class LoginComponent {
     // 2. Inyectamos el Router en el constructor
     constructor(private authService: AuthService, private router: Router) {}
 
+    
     onLogin() {
         this.authService.login(this.credencial).subscribe({
-            next: (res: any) => { // Puse 'any' para evitar errores de TypeScript al leer las propiedades
-                console.log('¡Éxito!', res);
-                
-                // 3. Guardamos el token en el navegador (ajusta 'res.token' según lo que envíe tu backend)
-                if (res.token) {
-                    localStorage.setItem('token', res.token);
+            next: (res) => {
+                // 1. Imprime la respuesta para asegurarte de qué te manda el backend
+                console.log("Respuesta del login:", res);
+
+                // 2. Guardamos las llaves con los NOMBRES EXACTOS que busca el Guardia
+                // (Ajusta 'res.token' o 'res.user.id' dependiendo de cómo lo envíe tu backend)
+                localStorage.setItem('token', res.token); 
+        
+                // Es importante convertir el ID a texto (toString) porque localStorage solo guarda strings
+                localStorage.setItem('user_id', res.user.id.toString()); 
+            
+                if (res.user.name) {
+                  localStorage.setItem('user_name', res.user.name);
                 }
                 
-                if (res.usuario && res.usuario.id) {
-                    localStorage.setItem('user_id', res.usuario.id.toString());
-                } else if (res.user && res.user.id) {
-                    localStorage.setItem('user_id', res.user.id.toString());
-                } else if (res.id) {
-                    localStorage.setItem('user_id', res.id.toString());
-                }
-
-                alert('Inicio de sesión exitoso');
-                
-                localStorage.setItem('user_name', JSON.stringify(res.user())); 
-
-                this.router.navigate(['/']);
+                alert('Inicio de sesio exitoso')
+                // 3. AHORA SÍ, con las llaves guardadas, le pedimos al router que viaje al home
+                this.router.navigate(['/home']);
             },
             error: (err) => {
                 console.error('Error al iniciar sesión', err);
