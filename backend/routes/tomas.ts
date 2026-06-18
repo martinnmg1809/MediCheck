@@ -7,7 +7,7 @@ const router = Router();
 // Calcula y genera ráfagas de tomas automáticas proyectadas a futuro en la BDD
 router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { user_id, medicamento_id, horario_inicio, frecuencia_horas, duracion_dias } = req.body; 
+        const { user_id, medicamento_id, horario_inicio, frecuencia_horas, duracion_dias} = req.body; 
         
         const tomasPorDia = 24 / frecuencia_horas;
         const tomasTotales = tomasPorDia * duracion_dias;

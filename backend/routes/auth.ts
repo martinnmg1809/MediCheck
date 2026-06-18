@@ -123,8 +123,6 @@ router.post('/forgot-password', async (req, res) => {
     }
 });
 
-
-
 router.post('/reset-password', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
@@ -161,6 +159,24 @@ router.post('/reset-password', async (req, res) => {
         console.error(error);
         res.status(500).json({ error: "Error al procesar la solicitud." });
     }
+});
+
+router.get('/treatments/:userId', async (req, res) => {
+    try{
+        const { userId } = req.params;
+        
+        const tratamientos = await sql`
+            SELECT * 
+            FROM tratamientos 
+            WHERE user_id = ${userId} and activo = true 
+        `
+        res.status(200).json({ treatments: tratamientos });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al procesar la solicitud." });
+    }
+
 });
 
 export default router;

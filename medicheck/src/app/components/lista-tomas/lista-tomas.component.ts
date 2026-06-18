@@ -105,8 +105,6 @@ export class ListaTomasComponent implements OnInit {
   }
   filtrarPorDia(): void {
     // 1. Diagnóstico de variables globale
-  
-
     if (!this.diaSeleccionado && this.diasSemana.length > 0) {
       this.diaSeleccionado = this.diasSemana[0].valor;
     }

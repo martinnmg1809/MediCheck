@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
   private API_URL = 'http://localhost:3000/api/auth';
+  private API_TOMAS = 'http://localhost:3000/api/tomas'
 
   constructor(private http: HttpClient) {}
 
@@ -27,7 +28,7 @@ export class AuthService {
     return this.http.post(`${this.API_URL}/reset-password`, { token, newPassword });
   }
 
-  getMedications(userId: string): Observable<any> {
-    return this.http.get(`${this.API_URL}/URLDETOMAS/${userId}`);
+  getTreatments(userId: string): Observable<any> {
+    return this.http.get(`${this.API_URL}/treatments/${userId}`);
   }
 }
