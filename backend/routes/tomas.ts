@@ -1,32 +1,61 @@
 import { Router, Request, Response } from 'express';
 import { sql } from '../db/database'; 
+import fs from 'fs';
+import path from 'path';
+import { error } from 'console';
+
 
 const router = Router();
+
+
+let palabrasBaneadas: string[] = [];
+
+try{
+    const ruta = path.join(__dirname, 'palabrasBAN.txt')
+    const contenido = fs.readFileSync(ruta, "utf-8") 
+
+    palabrasBaneadas = contenido
+    .split(/\r?\n/)
+    .map(palabra => palabra.trim().toLowerCase())
+    .filter(palabra=>palabra.length>0)
+
+}
+catch (error){
+    console.error("Aviso: No se pudo cargar el archivo de palabras baneadas.", error);
+}
+
+function baneoPalabras (texto: string): Boolean{
+    if(!texto){
+        return false;
+    }
+    const textoMinusculas = texto.toLowerCase()
+    return palabrasBaneadas.some(palabra=>textoMinusculas.includes(palabra));
+}
 
 // 1. REGISTRAR UN NUEVO TRATAMIENTO (POST /api/tomas)
 // Calcula y genera ráfagas de tomas automáticas proyectadas a futuro en la BDD
 // 1. REGISTRAR UN NUEVO TRATAMIENTO Y SUS TOMAS (POST /api/tomas)
 router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
-        // Notar que ahora recibimos "tratamiento" (el texto) en lugar del id
         const { user_id, medicamento_id, tratamiento, horario_inicio, frecuencia_horas, duracion_dias } = req.body; 
+
+        if(baneoPalabras(tratamiento)){
+            res.status(400).json({error: "Nombre de tratamiento inapropiado"});
+            return;
+        }
         
         if (!tratamiento) {
             res.status(400).json({ error: "El nombre del tratamiento es requerido." });
             return;
         }
-
-        // --- PASO 1: CREAR EL TRATAMIENTO (FUERA DEL CICLO) ---
         const tratamientoResult = await sql`
             INSERT INTO tratamientos (user_id, nombre, activo)
             VALUES (${user_id}, ${tratamiento}, true)
             RETURNING id
         `;
         
-        // Extraemos el ID real que Neon acaba de generar
         const idTratamientoValido = tratamientoResult[0].id;
 
-        // --- PASO 2: CONFIGURAR LA RÁFAGA DE TOMAS ---
         const tomasPorDia = 24 / frecuencia_horas;
         const tomasTotales = tomasPorDia * duracion_dias;
 
@@ -36,7 +65,6 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
 
         const queries = [];
 
-        // --- PASO 3: INSERTAR LAS TOMAS USANDO EL ID GENERADO ---
         for (let i = 0; i < tomasTotales; i++) {
             const fechaToma = new Date(fechaActual);
             const fechaCompleta = fechaToma.toISOString();
@@ -76,6 +104,28 @@ router.put('/verificar/:id', async (req: Request, res: Response): Promise<void> 
 
         if (result.length === 0) {
             res.status(404).json({ error: "Registro de toma no encontrado" });
+            return;
+        }
+        
+        const user_id = result[0].user_id;
+        const med_id = result[0].medicamento_id;
+        const tratamiento_id = result[0].tratamiento_id;
+
+        const pendientes = await sql `
+            SELECT COUNT(*) as pendientes
+            FROM tomas_medicamentos
+            WHERE user_id = ${user_id} and medicamento_id=${med_id} and verificado = FALSE
+        `
+        const total_pendientes = parseInt(pendientes[0].pendientes, 10)
+
+        if (total_pendientes === 0) {
+            await sql `
+                UPDATE tratamientos
+                SET activo = FALSE
+                WHERE user_id = ${user_id} and id=${tratamiento_id}
+            `
+            res.status(200).json({message: "Tratamiento completado"});
+            console
             return;
         }
 

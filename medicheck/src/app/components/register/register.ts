@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth';
 import { User } from '../../models/interfaces';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -20,14 +21,24 @@ export class RegisterComponent {
     role: "paciente"
   };
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onRegister() {
+    localStorage.clear();
     this.authService.register(this.nuevoUsuario).subscribe({
       next: (res) => {
         console.log('¡Éxito!', res);
         alert('Usuario registrado correctamente');
+
+        localStorage.setItem('token', res.token); 
         
+        localStorage.setItem('user_id', res.user.id.toString()); 
+            
+        if (res.user.name) {
+          localStorage.setItem('user_name', res.user.name);
+        }
+
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error('Error al registrar', err);

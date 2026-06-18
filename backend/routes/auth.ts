@@ -216,15 +216,8 @@ router.get('/treatments/:userId', async (req, res) => {
 
 });
 
-router.post('/logout', async (req, res) => {
-    try{
-        const userId = req.body;
-
-    }
-    catch(error){
-        console.error(error);
-        res.status(500).json({error: "Error al cerrar sesión"})
-    }
-});
-
 export default router;
+
+/*
+back-logica para verificar si el tiempo faltante para el siguiente es menor a cierta cantidad
+front- ciclo repitiendo la peticion http.get de noti*/

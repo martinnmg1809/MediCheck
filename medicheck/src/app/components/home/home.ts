@@ -45,4 +45,8 @@ export class HomeComponent implements OnInit {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
+
+  OnNew(){
+    this.router.navigate(['/create']);
+  }
 }

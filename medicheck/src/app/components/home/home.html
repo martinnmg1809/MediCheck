@@ -15,7 +15,7 @@
         <h3>Tus Tratamientos Activos</h3>
         <p class="subtitle">Monitorea tu progreso y mantén tu salud al día.</p>
       </div>
-      <button class="btn-primary" href="/create">+ Nuevo Tratamiento</button>
+      <button class="btn-primary"(click)="OnNew()">+ Nuevo Tratamiento</button>
     </div>
 
     <div *ngIf="TratamientosActivos.length === 0" class="empty-state">

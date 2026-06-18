@@ -22,16 +22,13 @@ export class LoginComponent {
 
     
     onLogin() {
+        localStorage.clear();
         this.authService.login(this.credencial).subscribe({
             next: (res) => {
-                // 1. Imprime la respuesta para asegurarte de qué te manda el backend
                 console.log("Respuesta del login:", res);
 
-                // 2. Guardamos las llaves con los NOMBRES EXACTOS que busca el Guardia
-                // (Ajusta 'res.token' o 'res.user.id' dependiendo de cómo lo envíe tu backend)
                 localStorage.setItem('token', res.token); 
         
-                // Es importante convertir el ID a texto (toString) porque localStorage solo guarda strings
                 localStorage.setItem('user_id', res.user.id.toString()); 
             
                 if (res.user.name) {
@@ -39,7 +36,6 @@ export class LoginComponent {
                 }
                 
                 alert('Inicio de sesio exitoso')
-                // 3. AHORA SÍ, con las llaves guardadas, le pedimos al router que viaje al home
                 this.router.navigate(['/home']);
             },
             error: (err) => {
