@@ -59,8 +59,11 @@ router.post('/register', async (req, res) => {
 
         const newUser = result[0];
 
+        const token = crypto.randomBytes(32).toString('hex');
+
         res.status(201).json({ 
-            message: "Usuario creado con éxito", 
+            message: "Usuario creado con éxito",
+            token,
             user: newUser 
         });
 
@@ -96,8 +99,11 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: "Inicio de sesión fallido" });
         }
         
+        const token = crypto.randomBytes(32).toString('hex');
+
         res.json({ 
-            message: "Inicio de sesión exitoso", 
+            message: "Inicio de sesión exitoso",
+            token,
             user: {
                 id: user.id,
                 name: user.name,

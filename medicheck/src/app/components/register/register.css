@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-
 /* Agregamos el host para asegurar que herede el alto del <main> y no empuje la navbar */
 :host {
   display: block;

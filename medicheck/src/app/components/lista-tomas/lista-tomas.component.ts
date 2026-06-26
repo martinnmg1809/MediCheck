@@ -106,17 +106,18 @@ export class ListaTomasComponent implements OnInit {
     });
   }
   filtrarPorDia(): void {
-    // 1. Diagnóstico de variables globale
     if (!this.diaSeleccionado && this.diasSemana.length > 0) {
       this.diaSeleccionado = this.diasSemana[0].valor;
     }
 
-    // 2. Ejecutar el filtro
     this.medicamentosFiltrados = this.medicamentos.filter(item => {
       return item.fecha_exacta === this.diaSeleccionado;
     });
+  }
 
-   
+  getSelectedDayLabel(): string {
+    const dia = this.diasSemana.find(item => item.valor === this.diaSeleccionado);
+    return dia ? dia.nombre : 'Tu día';
   }
 
   marcarTomado(tomaId: number): void {

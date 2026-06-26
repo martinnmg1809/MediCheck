@@ -1,19 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 .dashboard-container {
-  min-height: 100vh;
-  background-color: #F0F8FF; /* Azul clínico refrescante */
+  min-height: 100%;
+  background: linear-gradient(180deg, #f5fbff 0%, #eef7fb 100%);
   font-family: 'Inter', sans-serif;
+  width: 100%;
 }
 
 /* --- HEADER --- */
 .dashboard-header {
-  background-color: #FFFFFF;
-  padding: 15px 40px;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: clamp(12px, 2vw, 20px) clamp(16px, 3vw, 28px);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0, 105, 140, 0.05);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .brand {
@@ -33,7 +36,8 @@
 .user-controls {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: clamp(10px, 2vw, 20px);
+  flex-wrap: wrap;
 }
 
 .welcome-text {
@@ -58,16 +62,18 @@
 
 /* --- MAIN CONTENT --- */
 .dashboard-content {
-  max-width: 1200px;
+  max-width: min(1180px, 100%);
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: clamp(20px, 3vw, 40px) clamp(16px, 3vw, 24px) clamp(32px, 4vw, 48px);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 30px;
+  gap: 16px;
+  margin-bottom: clamp(20px, 3vw, 30px);
+  flex-wrap: wrap;
 }
 
 .section-header h3 {
@@ -87,11 +93,12 @@
   color: white;
   border: none;
   padding: 12px 20px;
-  border-radius: 8px;
+  border-radius: 999px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.1s;
+  min-height: 44px;
 }
 
 .btn-primary:hover {
@@ -99,6 +106,110 @@
 }
 
 .btn-primary:active {
+  transform: translateY(1px);
+}
+
+.next-dose-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f4fcff 100%);
+  border: 1px solid #dcecf5;
+  border-radius: clamp(14px, 2vw, 18px);
+  padding: clamp(14px, 2vw, 18px);
+  display: flex;
+  gap: clamp(10px, 2vw, 14px);
+  align-items: center;
+  margin-bottom: clamp(18px, 3vw, 24px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  width: 100%;
+}
+
+.next-dose-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #eaf7f6;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+
+.next-dose-content h4 {
+  margin: 2px 0 4px 0;
+  color: #1f2937;
+  font-size: 18px;
+}
+
+.next-dose-label {
+  margin: 0;
+  color: #009688;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.next-dose-detail {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.empty-next-dose {
+  border-style: dashed;
+}
+
+.btn-historial,
+.btn-editar,
+.btn-eliminar,
+.btn-logout {
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+  min-height: 44px;
+}
+
+.btn-historial {
+  background: #009688;
+  color: #ffffff;
+}
+
+.btn-historial:hover {
+  background: #00796B;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.btn-editar {
+  background: #FFFFFF;
+  color: #1B7D9A;
+  border: 1px solid #B8D7E0;
+}
+
+.btn-editar:hover {
+  background: #F4FBFD;
+}
+
+.btn-eliminar {
+  background: #FDE8E8;
+  color: #B13A3A;
+  border: 1px solid #F5C6C6;
+}
+
+.btn-eliminar:hover {
+  background: #F8D8D8;
+}
+
+.btn-historial:active,
+.btn-editar:active,
+.btn-eliminar:active {
   transform: translateY(1px);
 }
 
@@ -112,6 +223,74 @@
   color: #7F8C8D;
 }
 
+@media (max-width: 760px) {
+  .dashboard-header {
+    padding: 14px 16px;
+  }
+
+  .user-controls {
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .welcome-text {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .dashboard-content {
+    padding: 20px 16px 32px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .section-header h3 {
+    font-size: 20px;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+
+  .treatments-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .next-dose-card {
+    align-items: flex-start;
+  }
+
+  .card-actions {
+    flex-direction: column;
+  }
+
+  .btn-historial,
+  .btn-editar,
+  .btn-eliminar,
+  .btn-logout {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    align-items: flex-start;
+  }
+
+  .btn-historial,
+  .btn-logout {
+    justify-content: center;
+  }
+
+  .empty-state {
+    padding: 40px 16px;
+  }
+}
+
 .empty-state p {
   margin-top: 15px;
   font-size: 16px;
@@ -120,15 +299,15 @@
 /* --- CARDS GRID --- */
 .treatments-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: clamp(14px, 2vw, 20px);
 }
 
 .treatment-card {
   background-color: #FFFFFF;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  border-radius: clamp(14px, 2vw, 18px);
+  padding: clamp(16px, 2vw, 20px);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
   border: 1px solid #EBF5FB;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }

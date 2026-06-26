@@ -3,6 +3,7 @@ import { AuthService } from '../../services/auth';
 import { User } from '../../models/interfaces';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { saveSessionData } from '../../utils/session';
 
 @Component({
   selector: 'app-register',
@@ -30,13 +31,11 @@ export class RegisterComponent {
         console.log('¡Éxito!', res);
         alert('Usuario registrado correctamente');
 
-        localStorage.setItem('token', res.token); 
-        
-        localStorage.setItem('user_id', res.user.id.toString()); 
-            
-        if (res.user.name) {
-          localStorage.setItem('user_name', res.user.name);
-        }
+        const token = res?.token ?? '';
+        const userId = res?.user?.id?.toString();
+        const userName = res?.user?.name;
+
+        saveSessionData({ token, userId, userName });
 
         this.router.navigate(['/home']);
       },

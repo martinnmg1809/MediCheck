@@ -1,0 +1,249 @@
+/* Diseño de historial siguiendo el estilo general del proyecto */
+:host {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: clamp(12px, 2vw, 24px);
+  box-sizing: border-box;
+}
+
+.contenedor-app {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding: clamp(16px, 2.5vw, 24px);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-radius: clamp(16px, 2vw, 22px);
+  box-shadow: 0 18px 40px rgba(7, 40, 61, 0.08);
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: clamp(18px, 3vw, 28px);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.encabezado h2 {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 28px);
+  color: #173F5F;
+  font-weight: 700;
+}
+
+.btn-volver {
+  background: transparent;
+  border: 1px solid #DDE6ED;
+  color: #173F5F;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-volver:hover {
+  background: #F4F8FB;
+  border-color: #B8C7D9;
+}
+
+.estado-carga,
+.sin-datos {
+  width: 100%;
+  padding: 22px 24px;
+  border-radius: 18px;
+  background: #F5F8FB;
+  color: #526471;
+  border: 1px solid #E8EDF3;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.lista-historial {
+  display: grid;
+  gap: clamp(14px, 2vw, 20px);
+  width: 100%;
+}
+
+.tarjeta-tratamiento {
+  padding: clamp(16px, 2.3vw, 22px);
+  border-radius: clamp(16px, 2vw, 24px);
+  background: #FCFDFF;
+  border: 1px solid #E4EAF2;
+  box-shadow: 0 12px 24px rgba(16, 58, 93, 0.05);
+}
+
+.tarjeta-encabezado {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.info-med h3 {
+  margin: 0 0 6px 0;
+  font-size: clamp(17px, 2vw, 20px);
+  color: #1B3A57;
+}
+
+.principio,
+.nombre-tratamiento {
+  margin: 0;
+  color: #5D6F82;
+  font-size: 14px;
+}
+
+.nombre-tratamiento {
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.badge-estado {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.badge-estado.activo {
+  background: #E7F7EF;
+  color: #1C7F5B;
+  border-color: #BDE7D1;
+}
+
+.badge-estado.finalizado {
+  background: #F6F2F9;
+  color: #6D4E84;
+  border-color: #DDCEE6;
+}
+
+.barra-cumplimiento {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.barra-fondo {
+  flex: 1;
+  min-width: 180px;
+  height: 12px;
+  background: #E9EFF6;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barra-progreso {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.porcentaje-texto {
+  white-space: nowrap;
+  color: #2B4D63;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.tarjeta-detalle {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.stat {
+  background: #FFFFFF;
+  border: 1px solid #EBF1F7;
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 92px;
+  justify-content: center;
+}
+
+.stat-valor {
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 700;
+  color: #173F5F;
+}
+
+.stat-label,
+.stat-valor-fecha {
+  font-size: 13px;
+  color: #63738B;
+  line-height: 1.4;
+}
+
+@media (max-width: 820px) {
+  .tarjeta-detalle {
+    grid-template-columns: 1fr;
+  }
+
+  .stat {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  :host {
+    padding: 8px;
+  }
+
+  .contenedor-app {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .encabezado {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .encabezado h2 {
+    font-size: 22px;
+  }
+
+  .tarjeta-encabezado {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tarjeta-tratamiento {
+    padding: 16px;
+  }
+
+  .barra-cumplimiento {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .barra-fondo {
+    min-width: 100%;
+  }
+
+  .porcentaje-texto {
+    width: 100%;
+  }
+
+  .stat {
+    padding: 12px 14px;
+  }
+}

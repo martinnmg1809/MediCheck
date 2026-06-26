@@ -1,0 +1,181 @@
+/* Diseño de formulario coherente con el estilo del proyecto */
+.contenedor-app {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(7, 40, 61, 0.08);
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.encabezado h2 {
+  margin: 0;
+  font-size: 26px;
+  color: #173F5F;
+  font-weight: 700;
+}
+
+.btn-volver {
+  background: transparent;
+  border: 1px solid #DDE6ED;
+  color: #173F5F;
+  padding: 10px 16px;
+  border-radius: 13px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-volver:hover {
+  background: #F4F8FB;
+  border-color: #B8C7D9;
+}
+
+.formulario-card {
+  display: grid;
+  gap: 18px;
+}
+
+.alerta-exito,
+.alerta-error {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  font-weight: 600;
+}
+
+.alerta-exito {
+  background: #E8F7F1;
+  color: #1F7A5C;
+  border-color: #B8E6D3;
+}
+
+.alerta-error {
+  background: #FDE8E8;
+  color: #A03A3A;
+  border-color: #F1C0C0;
+}
+
+.campo {
+  display: grid;
+  gap: 10px;
+}
+
+.campo label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #34495E;
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  border: 1px solid #E4E9F2;
+  background: #F8FAFC;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 15px;
+  color: #222B38;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.campo input:focus,
+.campo select:focus {
+  border-color: #5F93AC;
+  box-shadow: 0 0 0 4px rgba(95, 147, 172, 0.12);
+}
+
+.campo input[type="number"] {
+  width: 100%;
+}
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.btn-cancelar,
+.btn-guardar {
+  min-width: 150px;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-cancelar {
+  background: #F4F8FB;
+  color: #395A72;
+}
+
+.btn-cancelar:hover {
+  background: #E9F1F8;
+}
+
+.btn-guardar {
+  background: #1B7D9A;
+  color: #ffffff;
+}
+
+.btn-guardar:hover {
+  background: #166B81;
+}
+
+.btn-guardar:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .contenedor-app {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .encabezado {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .encabezado h2 {
+    font-size: 22px;
+  }
+
+  .botones {
+    justify-content: stretch;
+  }
+
+  .btn-cancelar,
+  .btn-guardar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .campo input,
+  .campo select {
+    font-size: 16px;
+    padding: 13px 14px;
+  }
+}

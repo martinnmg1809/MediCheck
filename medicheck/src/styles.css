@@ -3,37 +3,49 @@
    CONFIGURACIÓN GLOBAL DE PANTALLA (COMPORTAMIENTO APP NATIVA)
    ========================================================================== */
 
+* {
+  box-sizing: border-box;
+}
+
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
-  max-width: 100vw; /* Asegura que NADA pueda superar el ancho de la pantalla */
-  
-  /* 1. Mata el scroll horizontal accidental */
-  overflow-x: hidden; 
-  
-  /* 2. Elimina el efecto "rebote" elástico al tirar la pantalla hacia arriba/abajo en móviles */
-  overscroll-behavior: none; 
+  min-height: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  background-color: #f5f9fc;
+  color: #1f2937;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* 3. Le damos a toda tu app un tamaño rígidamente ajustado a la pantalla del celular */
-/* Esto asegura que la app ocupe el 100% de la pantalla y se congele el fondo */
+body {
+  min-height: 100dvh;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
 app-root {
   display: flex;
   flex-direction: column;
-  height: 100dvh; 
-  overflow: hidden; 
+  min-height: 100dvh;
+  width: 100%;
+  overflow: hidden;
 }
 
-/* El contenedor donde cambian tus vistas (home, lista, formulario) */
 .contenedor-scroll, main {
-  flex-grow: 1; /* Ocupa todo el espacio sobrante debajo de la Navbar */
-  overflow-y: auto; /* ¡AQUÍ ESTÁ LA MAGIA! Permite scrollear hacia abajo */
-  overflow-x: hidden; /* Evita que se mueva hacia los lados */
-  
-  /* Quitamos el padding global porque tus componentes ya tienen el suyo propio */
-  padding: 0; 
-  
-  /* Esto hace que el scroll en celulares se sienta suave y con inercia (nativo de iOS/Android) */
-  -webkit-overflow-scrolling: touch; 
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  -webkit-overflow-scrolling: touch;
 }

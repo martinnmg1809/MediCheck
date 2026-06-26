@@ -1,18 +1,23 @@
 
 <body>
 <div class="contenedor-app">
+  <div class="agenda-hero">
+    <div class="agenda-copy">
+      <h2>Tu agenda</h2>
+      <p>Revisa tus tomas y marca las que ya tomaste.</p>
+    </div>
+    <button class="btn-circular-add" (click)="irACrear()" aria-label="Programar medicación">+</button>
+  </div>
+
   <div class="navegacion-superior">
     <div class="selector-dia">
-      <label>Tu horario del:</label>
+      <label>Ver por día</label>
       <select class="dropdown-semanal" [(ngModel)]="diaSeleccionado" (change)="filtrarPorDia()">
         <option *ngFor="let dia of diasSemana" [value]="dia.valor">
           {{ dia.nombre }}
         </option>
       </select>
     </div>
-    
-    
-    <button class="btn-circular-add" (click)="irACrear()">+</button>
   </div>
 
   <div class="timeline-container">
@@ -20,35 +25,46 @@
     <div *ngIf="cargandoInicial" class="estado-carga">Cargando horario...</div>
     
     <div *ngIf="!cargandoInicial && medicamentosFiltrados.length === 0" class="sin-datos">
-      <p>No tienes medicamentos programados para este día.</p>
+      <p>No tienes tomas programadas para este día. Añade una para empezar.</p>
     </div>
-<script>
-        console.log("Bandera 3");
-</script>
-    <ul class="timeline" *ngIf="medicamentosFiltrados.length > 0">
-      <li class="timeline-item" *ngFor="let item of medicamentosFiltrados">
-        <div class="timeline-hora">
-          <span>{{ item.horario_programado }}</span>
+    <div class="day-card" *ngIf="medicamentosFiltrados.length > 0">
+      <div class="day-card-header">
+        <div>
+          <p class="day-card-title">{{ getSelectedDayLabel() }}</p>
+          <p class="day-card-subtitle">{{ medicamentosFiltrados.length }} toma(s) programada(s)</p>
         </div>
-        <div class="timeline-punto" [ngClass]="{'completado': item.verificado}"></div>
-        <div class="timeline-contenido" [ngClass]="{'tarjeta-completada': item.verificado}">
-          <div class="info-medicamento">
-            <h3>{{ item.nombre_comercial }}</h3>
-            <p class="principio">{{ item.principio_activo }} ({{ item.concentracion }})</p>
+        <span class="day-card-badge">Tus tomas</span>
+      </div>
+
+      <div class="med-card-list">
+        <article class="med-card" *ngFor="let item of medicamentosFiltrados">
+          <div class="med-card-main">
+            <div class="med-icon">💊</div>
+            <div class="med-details">
+              <div class="med-meta-row">
+                <span class="med-time">{{ item.horario_programado }}</span>
+                <span class="med-status" [class.done]="item.verificado">
+                  {{ item.verificado ? 'Tomada' : 'Pendiente' }}
+                </span>
+              </div>
+              <h3>{{ item.nombre_comercial }}</h3>
+              <p>{{ item.principio_activo }} ({{ item.concentracion }})</p>
+            </div>
           </div>
-          <div class="acciones-medicamento">
+
+          <div class="med-card-actions">
             <ng-container *ngIf="item.verificado; else botonTomar">
-              <span class="etiqueta-tomado">✓ Tomado</span>
+              <span class="etiqueta-tomado">✓ Tomada</span>
             </ng-container>
             <ng-template #botonTomar>
               <button class="btn-tomar" (click)="marcarTomado(item.toma_id)">
-                Marcar Tomado
+                Marcar como tomada
               </button>
             </ng-template>
           </div>
-        </div>
-      </li>
-    </ul>
+        </article>
+      </div>
+    </div>
   </div>
 </div>
 </body>

@@ -1,0 +1,54 @@
+<div class="contenedor-app">
+  <div class="encabezado">
+    <button class="btn-volver" (click)="volver()">← Volver</button>
+    <h2>Historial de Medicamentos</h2>
+  </div>
+
+  <div *ngIf="cargando" class="estado-carga">Cargando historial...</div>
+
+  <div *ngIf="!cargando && historial.length === 0" class="sin-datos">
+    <p>No tienes tratamientos registrados aún.</p>
+  </div>
+
+  <div class="lista-historial" *ngIf="!cargando && historial.length > 0">
+    <div class="tarjeta-tratamiento" *ngFor="let item of historial">
+
+      <div class="tarjeta-encabezado">
+        <div class="info-med">
+          <h3>{{ item.nombre_comercial }}</h3>
+          <p class="principio">{{ item.principio_activo }} — {{ item.concentracion }}</p>
+          <p class="nombre-tratamiento">Tratamiento: {{ item.tratamiento_nombre }}</p>
+        </div>
+        <span class="badge-estado" [class.activo]="item.activo" [class.finalizado]="!item.activo">
+          {{ item.activo ? 'En curso' : 'Finalizado' }}
+        </span>
+      </div>
+
+      <div class="barra-cumplimiento">
+        <div class="barra-fondo">
+          <div class="barra-progreso"
+            [style.width.%]="item.porcentaje_cumplimiento"
+            [style.background-color]="getColorCumplimiento(item.porcentaje_cumplimiento)">
+          </div>
+        </div>
+        <span class="porcentaje-texto">{{ item.porcentaje_cumplimiento }}%</span>
+      </div>
+
+      <div class="tarjeta-detalle">
+        <div class="stat">
+          <span class="stat-valor">{{ item.tomas_verificadas }}</span>
+          <span class="stat-label">Tomadas</span>
+        </div>
+        <div class="stat">
+          <span class="stat-valor">{{ item.total_tomas }}</span>
+          <span class="stat-label">Total</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Última toma</span>
+          <span class="stat-valor-fecha">{{ formatearFecha(item.ultima_toma_real) }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

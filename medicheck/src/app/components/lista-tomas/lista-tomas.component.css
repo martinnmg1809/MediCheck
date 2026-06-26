@@ -6,21 +6,44 @@
   background-color: #f0f2f5; 
   min-height: 100%; 
   width: 100%;
-  padding: 2rem 1rem; 
+  padding: clamp(12px, 2vw, 24px) clamp(10px, 2vw, 16px); 
   box-sizing: border-box; 
 }
 
 /* --- CONTENEDOR CENTRAL --- */
 .contenedor-app { 
   width: 100%;
-  max-width: 100%; /* <-- ¡Aquí está la magia! Quitamos el límite de 650px */
+  max-width: 1100px;
   background: white; 
-  min-height: 100vh; 
-  padding: 30px; 
-  border-radius: 16px; 
+  min-height: 100%;
+  padding: clamp(18px, 3vw, 30px); 
+  border-radius: clamp(12px, 2vw, 16px); 
   box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
   box-sizing: border-box; 
+}
+
+/* --- CABECERA DE AGENDA --- */
+.agenda-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.agenda-copy h2 {
+  margin: 0 0 4px 0;
+  font-size: clamp(22px, 2.6vw, 26px);
+  color: #1c1c1e;
+}
+
+.agenda-copy p {
+  margin: 0;
+  color: #8e8e93;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 /* --- NAVEGACIÓN SUPERIOR --- */
@@ -28,9 +51,11 @@
   display: flex; 
   justify-content: space-between; 
   align-items: center; 
-  margin-bottom: 30px; 
-  padding-bottom: 15px; 
+  margin-bottom: 18px; 
+  padding-bottom: 12px; 
   border-bottom: 1px solid #f0f0f0; 
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .selector-dia label { 
@@ -43,20 +68,22 @@
 .dropdown-semanal { 
   background: #f2f2f7; 
   border: none; 
-  padding: 8px 12px; 
-  border-radius: 8px; 
+  padding: 10px 12px; 
+  border-radius: 10px; 
   font-weight: 600; 
-  font-size: 16px; 
+  font-size: 15px; 
   color: #1c1c1e; 
   outline: none; 
   cursor: pointer;
+  width: 100%;
+  max-width: 240px;
 }
 
 .btn-circular-add { 
-  width: 40px; 
-  height: 40px; 
+  width: 44px; 
+  height: 44px; 
   border-radius: 50%; 
-  background: #155d6a; 
+  background: linear-gradient(135deg, #155d6a, #0f766e); 
   color: white; 
   border: none; 
   font-size: 24px; 
@@ -64,99 +91,131 @@
   justify-content: center; 
   align-items: center; 
   cursor: pointer; 
-  box-shadow: 0 4px 10px rgba(0,122,255,0.3); 
-  flex-shrink: 0; /* Evita que el botón se deforme si falta espacio */
+  box-shadow: 0 6px 16px rgba(21, 93, 106, 0.25); 
+  flex-shrink: 0;
 }
 
-/* --- TIMELINE UI (Línea de tiempo) --- */
-.timeline { 
-  list-style: none; 
-  padding: 0; 
-  margin: 0; 
-  position: relative; 
+/* --- TARJETA DE DÍA --- */
+.day-card {
+  background: linear-gradient(135deg, #f8fcff 0%, #f3f9ff 100%);
+  border: 1px solid #e5edf5;
+  border-radius: clamp(14px, 2vw, 20px);
+  padding: clamp(14px, 2vw, 18px);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
 }
 
-.timeline::before { 
-  content: ''; 
-  position: absolute; 
-  top: 0; 
-  bottom: 0; 
-  left: 45px; 
-  width: 2px; 
-  background-color: #e5e5ea; 
+.day-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
-.timeline-item { 
-  display: flex; 
-  align-items: stretch; 
-  margin-bottom: 20px; 
-  position: relative; 
-  width: 100%; /* Obliga al ítem a usar todo el ancho de la pantalla */
+.day-card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1c1c1e;
 }
 
-.timeline-hora { 
-  width: 35px; 
-  padding-right: 15px; 
-  text-align: right; 
-  font-weight: 700; 
-  color: #3a3a3c; 
-  padding-top: 15px; 
-  font-size: 14px; 
-  flex-shrink: 0; /* Asegura que la hora no se aplaste */
-  box-sizing: content-box;
+.day-card-subtitle {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #8e8e93;
 }
 
-.timeline-punto { 
-  width: 14px; 
-  height: 14px; 
-  background-color: #fff; 
-  border: 3px solid #155d6a; 
-  border-radius: 50%; 
-  position: absolute; 
-  left: 39px; 
-  top: 15px; 
-  z-index: 1; 
-  box-sizing: border-box;
+.day-card-badge {
+  background: #e7f5f5;
+  color: #155d6a;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: 999px;
 }
 
-.timeline-punto.completado { 
-  border-color: #34c759; 
-  background-color: #34c759; 
+.med-card-list {
+  display: grid;
+  gap: 12px;
 }
 
-/* --- TARJETA DE LA TOMA --- */
-.timeline-contenido { 
-  margin-left: 20px; 
-  background: #fff; 
-  border: 1px solid #e5e5ea; 
-  border-radius: 12px; 
-  padding: 15px; 
-  flex-grow: 1; /* <-- Esto empuja la tarjeta hasta el borde derecho */
-  border-left: 5px solid #155d6a; 
-  display: flex; 
-  flex-direction: column; 
-  gap: 12px; 
+.med-card {
+  background: #ffffff;
+  border: 1px solid #e9eef4;
+  border-radius: clamp(12px, 2vw, 16px);
+  padding: clamp(12px, 2vw, 14px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.03);
+}
+
+.med-card-main {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.med-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #eaf7f6;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.med-details h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  color: #1c1c1e;
+}
+
+.med-details p {
+  margin: 0;
+  font-size: 13px;
+  color: #8e8e93;
+}
+
+.med-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.med-time {
+  font-size: 13px;
+  font-weight: 700;
+  color: #155d6a;
+}
+
+.med-status {
+  font-size: 12px;
+  color: #8e8e93;
+  font-weight: 600;
+}
+
+.med-status.done {
+  color: #34c759;
+}
+
+.med-card-actions {
   width: 100%;
-  box-sizing: border-box; 
+  margin-top: 2px;
 }
-
-.timeline-contenido.tarjeta-completada { 
-  border-left-color: #34c759; 
-  background: #f2fff4; 
-}
-
-.info-medicamento h3 { margin: 0 0 4px 0; font-size: 18px; color: #1c1c1e; }
-.principio { margin: 0; font-size: 14px; color: #8e8e93; }
-
-.acciones-medicamento { width: 100%; }
 
 .btn-tomar { 
   width: 100%; 
-  background-color: #155d6a; 
+  background: linear-gradient(135deg, #155d6a, #0f766e);
   color: white; 
   border: none; 
-  padding: 12px; 
-  border-radius: 8px; 
+  padding: 12px;
+  border-radius: 10px; 
   cursor: pointer; 
   font-weight: 600; 
   font-size: 15px; 
@@ -174,7 +233,7 @@
   font-size: 14px; 
   padding: 10px 0; 
   background-color: rgba(52, 199, 89, 0.1); 
-  border-radius: 8px; 
+  border-radius: 10px;
   box-sizing: border-box;
 }
 
@@ -191,15 +250,57 @@
   }
 
   .contenedor-app {
-    max-width: 100%; /* Rompe el límite, ocupa toda la pantalla */
+    max-width: 100%;
     border-radius: 0;
     box-shadow: none;
-    padding: 20px 15px; /* Ajuste de los bordes laterales para celulares */
+    padding: 16px 12px;
   }
 
-  /* Reducimos ligeramente el margen de la línea de tiempo para ganar espacio para la tarjeta */
-  .timeline-contenido {
-    margin-left: 15px;
-    padding: 12px;
+  .agenda-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navegacion-superior {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dropdown-semanal {
+    max-width: 100%;
+  }
+
+  .day-card {
+    padding: 14px;
+  }
+
+  .day-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .med-card-main {
+    flex-direction: column;
+  }
+
+  .med-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .med-details h3 {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 900px) {
+  .med-card {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .med-card-actions {
+    max-width: 220px;
   }
 }

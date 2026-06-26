@@ -1,11 +1,11 @@
 <div class="contenedor-app">
   <div class="header-minimal">
-    <button class="btn-text" (click)="irALista()">⬅ Volver a mi historial</button>
+    <button class="btn-text" (click)="irALista()">⬅ Volver a la agenda</button>
   </div>
 
   <div class="card-formulario">
-    <h1 class="titulo-form">Nuevo Tratamiento</h1>
-    <p class="subtitulo-form">Configura los detalles de tu medicación</p>
+    <h1 class="titulo-form">Programar medicación</h1>
+    <p class="subtitulo-form">Organiza tus tomas de forma sencilla y clara</p>
 
     <div class="campo-grupo">
       <label>Medicamento</label>
@@ -42,7 +42,7 @@
     </div>
 
     <button class="btn-primario" (click)="crearTratamiento()" [disabled]="agregando">
-      {{ agregando ? 'Guardando...' : 'Comenzar Tratamiento' }}
+      {{ agregando ? 'Guardando...' : 'Guardar programación' }}
     </button>
   </div>
 </div>

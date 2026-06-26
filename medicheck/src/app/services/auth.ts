@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
   private API_URL = 'http://localhost:3000/api/auth';
-  private API_TOMAS = 'http://localhost:3000/api/tomas'
+  private API_TOMAS = 'http://localhost:3000/api/tomas';
 
   constructor(private http: HttpClient) {}
 
@@ -32,7 +32,19 @@ export class AuthService {
     return this.http.get(`${this.API_URL}/treatments/${userId}`);
   }
 
+  getUpcomingDoses(userId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_TOMAS}/usuario/${userId}/historial`);
+  }
+
   logOut(userId: string): Observable<any> {
     return this.http.post(`${this.API_URL}/logout/`, userId);
+  }
+
+  eliminarTratamiento(tratamientoId: number): Observable<any> {
+    return this.http.delete(`${this.API_TOMAS}/tratamiento/${tratamientoId}`);
+  }
+
+  editarTratamiento(tratamientoId: number, datos: any): Observable<any> {
+    return this.http.put(`${this.API_TOMAS}/tratamiento/${tratamientoId}`, datos);
   }
 }

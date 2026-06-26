@@ -166,5 +166,157 @@ router.get('/usuario/:user_id/historial', async (req: Request, res: Response): P
         res.status(500).json({ error: "Error al mapear e indexar el historial" });
     }
 });
+// 3. EDITAR TRATAMIENTO (PUT /api/tomas/tratamiento/:tratamiento_id)
+// Borra tomas futuras no verificadas y regenera con nuevos datos
+router.put('/tratamiento/:tratamiento_id', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { tratamiento_id } = req.params;
+        const { medicamento_id, tratamiento, horario_inicio, frecuencia_horas, duracion_dias } = req.body;
 
+        if (baneoPalabras(tratamiento)) {
+            res.status(400).json({ error: "Nombre de tratamiento inapropiado" });
+            return;
+        }
+
+        // Actualizar nombre del tratamiento
+        await sql`
+            UPDATE tratamientos 
+            SET nombre = ${tratamiento}
+            WHERE id = ${tratamiento_id}
+        `;
+
+        // Borrar solo las tomas futuras NO verificadas
+        await sql`
+            DELETE FROM tomas_medicamentos
+            WHERE tratamiento_id = ${tratamiento_id}
+              AND verificado = FALSE
+              AND horario > NOW()
+        `;
+
+        // Regenerar tomas con los nuevos datos
+        const tomasPorDia = 24 / frecuencia_horas;
+        const tomasTotales = tomasPorDia * duracion_dias;
+
+        const [hora, minutos] = horario_inicio.split(':');
+        let fechaActual = new Date();
+        fechaActual.setHours(parseInt(hora, 10), parseInt(minutos, 10), 0, 0);
+
+        const queries = [];
+        for (let i = 0; i < tomasTotales; i++) {
+            const fechaToma = new Date(fechaActual);
+            const fechaCompleta = fechaToma.toISOString();
+            queries.push(sql`
+                INSERT INTO tomas_medicamentos (user_id, medicamento_id, tratamiento_id, horario)
+                SELECT user_id, ${medicamento_id}, ${tratamiento_id}, ${fechaCompleta}::timestamptz
+                FROM tratamientos WHERE id = ${tratamiento_id}
+            `);
+            fechaActual.setHours(fechaActual.getHours() + frecuencia_horas);
+        }
+
+        await Promise.all(queries);
+        res.status(200).json({ message: "Tratamiento actualizado con éxito" });
+
+    } catch (error) {
+        console.error("Error en PUT /tratamiento/:id:", error);
+        res.status(500).json({ error: "Error al editar el tratamiento" });
+    }
+});
+
+
+// 4. ELIMINAR TRATAMIENTO (DELETE /api/tomas/tratamiento/:tratamiento_id)
+router.delete('/tratamiento/:tratamiento_id', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { tratamiento_id } = req.params;
+
+        // Primero borra las tomas asociadas (por integridad referencial)
+        await sql`
+            DELETE FROM tomas_medicamentos
+            WHERE tratamiento_id = ${tratamiento_id}
+        `;
+
+        // Luego borra el tratamiento
+        const result = await sql`
+            DELETE FROM tratamientos
+            WHERE id = ${tratamiento_id}
+            RETURNING *
+        `;
+
+        if (result.length === 0) {
+            res.status(404).json({ error: "Tratamiento no encontrado" });
+            return;
+        }
+
+        res.status(200).json({ message: "Tratamiento eliminado correctamente" });
+
+    } catch (error) {
+        console.error("Error en DELETE /tratamiento/:id:", error);
+        res.status(500).json({ error: "Error al eliminar el tratamiento" });
+    }
+});
+
+
+// 5. HISTORIAL CON CUMPLIMIENTO (GET /api/tomas/usuario/:user_id/cumplimiento)
+router.get('/usuario/:user_id/cumplimiento', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { user_id } = req.params;
+
+        const result = await sql`
+            SELECT 
+                t.id AS tratamiento_id,
+                t.nombre AS tratamiento_nombre,
+                t.activo,
+                m.nombre_comercial,
+                m.principio_activo,
+                m.concentracion,
+                COUNT(tm.id) AS total_tomas,
+                COUNT(CASE WHEN tm.verificado = TRUE THEN 1 END) AS tomas_verificadas,
+                ROUND(
+                    COUNT(CASE WHEN tm.verificado = TRUE THEN 1 END)::numeric 
+                    / NULLIF(COUNT(tm.id), 0) * 100, 1
+                ) AS porcentaje_cumplimiento,
+                MAX(tm.fecha_real_toma) AS ultima_toma_real
+            FROM tratamientos t
+            JOIN tomas_medicamentos tm ON t.id = tm.tratamiento_id
+            JOIN medicamentos m ON tm.medicamento_id = m.id
+            WHERE t.user_id = ${user_id}
+            GROUP BY t.id, t.nombre, t.activo, m.nombre_comercial, m.principio_activo, m.concentracion
+            ORDER BY t.activo DESC, ultima_toma_real DESC NULLS LAST
+        `;
+
+        res.status(200).json(result);
+
+    } catch (error) {
+        console.error("Error en GET /cumplimiento:", error);
+        res.status(500).json({ error: "Error al obtener el historial de cumplimiento" });
+    }
+});
+// GET /api/tomas/tratamiento/:tratamiento_id — obtener datos de un tratamiento para editar
+router.get('/tratamiento/:tratamiento_id', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { tratamiento_id } = req.params;
+
+        const result = await sql`
+            SELECT 
+                t.id,
+                t.nombre,
+                tm.medicamento_id,
+                MIN(tm.horario)::text AS horario_inicio,
+                COUNT(DISTINCT DATE_TRUNC('day', tm.horario)) AS duracion_dias
+            FROM tratamientos t
+            JOIN tomas_medicamentos tm ON t.id = tm.tratamiento_id
+            WHERE t.id = ${tratamiento_id}
+            GROUP BY t.id, t.nombre, tm.medicamento_id
+        `;
+
+        if (result.length === 0) {
+            res.status(404).json({ error: "Tratamiento no encontrado" });
+            return;
+        }
+
+        res.status(200).json(result[0]);
+    } catch (error) {
+        console.error("Error en GET /tratamiento/:id:", error);
+        res.status(500).json({ error: "Error al obtener el tratamiento" });
+    }
+});
 export default router;

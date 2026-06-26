@@ -27,17 +27,23 @@
                     (click)="closeMenu()">Inicio</a>
             </li>
             <li>
-                <a routerLink="/list" routerLinkActive="active" (click)="closeMenu()">Lista de Tomas</a>
+                <a routerLink="/list" routerLinkActive="active" (click)="closeMenu()">Mi agenda</a>
             </li>
             <li>
-                <a routerLink="/create" routerLinkActive="active" (click)="closeMenu()">Crear Toma</a>
+                <a routerLink="/create" routerLinkActive="active" (click)="closeMenu()">Programar medicación</a>
             </li>
         </ul>
 
         <div class="navbar-auth">
-            <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()" class="btn-login">Iniciar Sesión</a>
-            <a routerLink="/register" routerLinkActive="active" (click)="closeMenu()"
-                class="btn-register">Registrarse</a>
+            <ng-container *ngIf="!isLoggedIn; else loggedInActions">
+                <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()" class="btn-login">Iniciar Sesión</a>
+                <a routerLink="/register" routerLinkActive="active" (click)="closeMenu()"
+                    class="btn-register">Registrarse</a>
+            </ng-container>
+
+            <ng-template #loggedInActions>
+                <button class="btn-logout-navbar" (click)="onLogout(); closeMenu()">Cerrar sesión</button>
+            </ng-template>
         </div>
     </div>
 </nav>

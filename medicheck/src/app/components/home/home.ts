@@ -1,13 +1,13 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-// Importa tu servicio para luego poder hacer la petición HTTP
-import { AuthService } from '../../services/auth'; 
+import { AuthService } from '../../services/auth';
+import { clearSessionData } from '../../utils/session';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [CommonModule],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
@@ -15,10 +15,14 @@ export class HomeComponent implements OnInit {
   username: string | null = null;
   userId: string | null = null;
   token: string | null = null;
-  
-  TratamientosActivos: any[] = []; 
+  TratamientosActivos: any[] = [];
+  proximaToma: any | null = null;
 
-  constructor(private authService: AuthService, private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private authService: AuthService, 
+    private router: Router, 
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.username = localStorage.getItem('user_name');
@@ -27,26 +31,112 @@ export class HomeComponent implements OnInit {
 
     if (this.userId) {
       this.authService.getTreatments(this.userId).subscribe({
-        next: (res)=>{
+        next: (res) => {
           this.TratamientosActivos = res.treatments;
-          console.log(res)
-          console.log('Tratamientos obtenidos correctamente.')
           this.cdr.detectChanges();
         },
-        error: (err)=>{
-          console.error('Error al obtener tratamientos', err)
-          alert('Hubo un error al obtener los tratamientos.')
+        error: (err) => {
+          console.error('Error al obtener tratamientos', err);
+          alert('Hubo un error al obtener los tratamientos.');
+        }
+      });
+
+      this.authService.getUpcomingDoses(this.userId).subscribe({
+        next: (doses) => {
+          this.proximaToma = this.getNextPendingDose(doses);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error al obtener la próxima toma', err);
         }
       });
     }
   }
   
-  OnLogout(){
-    localStorage.clear();
+  OnLogout() {
+    clearSessionData();
     this.router.navigate(['/login']);
   }
 
-  OnNew(){
+  OnNew() {
     this.router.navigate(['/create']);
+  }
+
+  editarTratamiento(id: number) {
+    this.router.navigate(['/editar-tratamiento', id]);
+  }
+
+  eliminarTratamiento(id: number) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este tratamiento?')) {
+      this.authService.eliminarTratamiento(id).subscribe({
+        next: () => {
+          alert('Tratamiento eliminado correctamente.');
+          this.TratamientosActivos = this.TratamientosActivos.filter((t: any) => t.id !== id);
+          this.cdr.detectChanges();
+        },
+        error: () => alert('No se pudo eliminar el tratamiento.')
+      });
+    }
+  }
+
+  irAHistorial() {
+    this.router.navigate(['/historial']);
+  }
+
+  private getNextPendingDose(doses: any[]): any | null {
+    const pendientes = (doses || [])
+      .filter((dosis) => !dosis.verificado)
+      .map((dosis) => ({
+        ...dosis,
+        fechaHora: this.parseDateTime(dosis.fecha_exacta, dosis.horario_programado)
+      }))
+      .filter((dosis) => dosis.fechaHora && dosis.fechaHora.getTime() > Date.now())
+      .sort((a, b) => a.fechaHora.getTime() - b.fechaHora.getTime());
+
+    const siguiente = pendientes[0];
+
+    if (!siguiente) {
+      return null;
+    }
+
+    return {
+      ...siguiente,
+      resumen: this.getDoseSummary(siguiente.fechaHora)
+    };
+  }
+
+  private parseDateTime(fecha: string, hora: string): Date | null {
+    if (!fecha || !hora) {
+      return null;
+    }
+
+    const iso = `${fecha}T${hora}:00`;
+    const parsed = new Date(iso);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  private getDoseSummary(fechaHora: Date): string {
+    const ahora = Date.now();
+    const diffHoras = Math.round((fechaHora.getTime() - ahora) / (1000 * 60 * 60));
+
+    if (diffHoras <= 24 && diffHoras > 0) {
+      return `En ${diffHoras} hora${diffHoras === 1 ? '' : 's'}`;
+    }
+
+    if (diffHoras <= 0) {
+      return 'Hoy';
+    }
+
+    const mañana = new Date();
+    mañana.setDate(mañana.getDate() + 1);
+    const esMañana = fechaHora.toDateString() === mañana.toDateString();
+
+    if (esMañana) {
+      return `Mañana a las ${fechaHora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    const opciones: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'short' };
+    const fechaTexto = fechaHora.toLocaleDateString('es-ES', opciones);
+    return `${fechaTexto} a las ${fechaHora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
   }
 }
