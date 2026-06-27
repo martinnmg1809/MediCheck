@@ -355,3 +355,20 @@
   font-size: 13px;
   color: #95A5A6;
 }
+.btn-sintomas {
+  padding: 8px 16px;
+  border: 1.5px solid #009688;
+  border-radius: 8px;
+  background: transparent;
+  color: #009688;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+}
+ 
+.btn-sintomas:hover {
+  background: #009688;
+  color: #fff;
+}

@@ -1,0 +1,96 @@
+<div class="rs-container">
+
+  <!-- ENCABEZADO FIJO -->
+  <header class="rs-header">
+    <button class="btn-volver" (click)="volver()">← Volver</button>
+    <div class="rs-header-text">
+      <h2>¿Cómo te sientes?</h2>
+      <p class="rs-subtitulo">Selecciona un síntoma y marca su intensidad</p>
+    </div>
+    <button class="btn-historial-link" (click)="verHistorial()">Ver historial</button>
+  </header>
+
+  <!-- ÁREA CON SCROLL -->
+  <div class="rs-scroll-area">
+
+    <!-- ESTADO CARGANDO -->
+    <div *ngIf="cargando" class="rs-cargando">
+      <div class="spinner"></div>
+      <p>Cargando síntomas…</p>
+    </div>
+
+    <ng-container *ngIf="!cargando">
+
+      <!-- BANNER ÉXITO -->
+      <div class="rs-banner-exito" *ngIf="exito">
+        <span class="exito-icono">✅</span>
+        <span>Síntoma registrado correctamente</span>
+      </div>
+
+      <!-- ── PASO 1: SELECCIONAR SÍNTOMA ── -->
+      <section class="rs-seccion">
+        <h3 class="rs-step-label">
+          <span class="rs-step-num">1</span>
+          Selecciona el síntoma
+        </h3>
+
+        <div *ngFor="let grupo of grupos" class="rs-grupo">
+          <p class="rs-grupo-titulo">{{ grupo.categoria }}</p>
+          <div class="rs-chips">
+            <button
+              *ngFor="let s of grupo.sintomas"
+              class="rs-chip"
+              [class.rs-chip--activo]="estaSeleccionado(s)"
+              (click)="seleccionar(s)"
+              type="button">
+              <span class="rs-chip-icono">{{ s.icono }}</span>
+              {{ s.nombre }}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PASO 2: INTENSIDAD ── -->
+      <section class="rs-seccion rs-seccion-intensidad" *ngIf="sintomaSeleccionado">
+
+        <h3 class="rs-step-label">
+          <span class="rs-step-num">2</span>
+          ¿Qué tan intenso es?
+        </h3>
+
+        <div class="rs-sintoma-preview">
+          <span class="preview-icono">{{ sintomaSeleccionado.icono }}</span>
+          <span class="preview-nombre">{{ sintomaSeleccionado.nombre }}</span>
+        </div>
+
+        <div class="rs-escala">
+          <button
+            *ngFor="let n of [1,2,3,4,5,6,7,8,9,10]"
+            class="rs-escala-btn"
+            [class.rs-escala-btn--activo]="intensidad === n"
+            [style.--color]="getColorIntensidad()"
+            (click)="setIntensidad(n)"
+            type="button">
+            {{ n }}
+          </button>
+        </div>
+
+        <div class="rs-etiqueta-intensidad" [style.color]="getColorIntensidad()">
+          <span class="etiqueta-dot" [style.background]="getColorIntensidad()"></span>
+          {{ getEtiquetaIntensidad() }} ({{ intensidad }}/10)
+        </div>
+
+        <button
+          class="btn-guardar"
+          (click)="guardar()"
+          [disabled]="guardando"
+          type="button">
+          <span *ngIf="!guardando">💾 Registrar síntoma</span>
+          <span *ngIf="guardando">Guardando…</span>
+        </button>
+
+      </section>
+
+    </ng-container>
+  </div><!-- fin rs-scroll-area -->
+</div>
