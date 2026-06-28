@@ -46,7 +46,8 @@ export function hasValidSession(): boolean {
   const token = localStorage.getItem('token')?.trim();
   const userId = localStorage.getItem('user_id')?.trim();
 
-  if (!token && !userId) {
+  if (!token || !userId) {
+    clearSessionData();
     return false;
   }
 

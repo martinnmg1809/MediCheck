@@ -2,46 +2,76 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth';
 import { User } from '../../models/interfaces';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { saveSessionData } from '../../utils/session';
+import { Router, RouterLink } from '@angular/router';
+import { hasValidSession, saveSessionData } from '../../utils/session';
 
 @Component({
   selector: 'app-register',
-  templateUrl: './register.html', // Aquí iría tu formulario HTML
-  styleUrl: './register.css', // Aquí irían tus estilos CSS
+  templateUrl: './register.html',
+  styleUrl: './register.css',
   standalone: true,
-  imports: [FormsModule]
+  imports: [FormsModule, RouterLink]
 })
 
 export class RegisterComponent {
-  // Objeto que se vincula al formulario HTML
   nuevoUsuario: User = {
     name: '',
     email: '',
     password: '',
-    role: "paciente"
+    role: 'paciente'
   };
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {
+    if (hasValidSession()) {
+      this.router.navigate(['/home']);
+    }
+  }
 
   onRegister() {
-    localStorage.clear();
-    this.authService.register(this.nuevoUsuario).subscribe({
-      next: (res) => {
-        console.log('¡Éxito!', res);
-        alert('Usuario registrado correctamente');
+    const name = this.nuevoUsuario.name?.trim() ?? '';
+    const email = this.nuevoUsuario.email?.trim().toLowerCase() ?? '';
+    const password = this.nuevoUsuario.password?.trim() ?? '';
 
-        const token = res?.token ?? '';
+    if (!name || !email || !password) {
+      alert('Completa todos los campos para crear tu cuenta.');
+      return;
+    }
+
+    if (name.length < 3) {
+      alert('El nombre debe tener al menos 3 caracteres.');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert('Ingresa un correo electrónico válido.');
+      return;
+    }
+
+    if (password.length < 6) {
+      alert('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
+    localStorage.clear();
+    this.authService.register({ ...this.nuevoUsuario, name, email, password }).subscribe({
+      next: (res) => {
+        const token = res?.token?.trim() ?? '';
         const userId = res?.user?.id?.toString();
         const userName = res?.user?.name;
 
-        saveSessionData({ token, userId, userName });
+        if (!token || !userId) {
+          alert('No se pudo completar el registro. Intenta nuevamente.');
+          return;
+        }
 
+        saveSessionData({ token, userId, userName });
+        alert('Usuario registrado correctamente');
         this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error('Error al registrar', err);
-        alert('Hubo un problema con el registro');
+        const message = err?.error?.error || 'Hubo un problema con el registro';
+        alert(message);
       }
     });
   }

@@ -6,7 +6,7 @@ import { HomeComponent } from './components/home/home';
 import { ListaTomasComponent } from './components/lista-tomas/lista-tomas.component';
 import { FormularioTomaComponent } from './components/formulario-toma/formulario-toma.component';
 import { ResetComponent } from './components/formulario-reset-password/reset-password';
-import { authGuard } from './guard/guard';
+import { authGuard, publicGuard } from './guard/guard';
 import { EditarTratamiento } from './components/editar-tratamiento/editar-tratamiento';
 import { Historial } from './components/historial/historial';
 // ── NUEVOS ──────────────────────────────────────────────────────
@@ -14,10 +14,10 @@ import { RegistrarSintomasComponent } from './components/registrar-sintomas/regi
 import { VerSintomasComponent }       from './components/ver-sintomas/ver-sintomas';
 
 export const routes: Routes = [
-    { path: '',                   redirectTo: 'home', pathMatch: 'full' },
+    { path: '',                   redirectTo: 'login', pathMatch: 'full' },
     { path: 'home',               component: HomeComponent,               canActivate: [authGuard] },
-    { path: 'register',           component: RegisterComponent },
-    { path: 'login',              component: LoginComponent },
+    { path: 'register',           component: RegisterComponent, canActivate: [publicGuard] },
+    { path: 'login',              component: LoginComponent,    canActivate: [publicGuard] },
     { path: 'create',             component: FormularioTomaComponent },
     { path: 'list',               component: ListaTomasComponent },
     { path: 'forgot-password',    component: ForgotComponent },

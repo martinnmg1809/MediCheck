@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router'; // 1. Importamos el Router
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { User } from '../../models/interfaces';
 import { FormsModule } from '@angular/forms';
-import { saveSessionData } from '../../utils/session';
+import { hasValidSession, saveSessionData } from '../../utils/session';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.html',
     styleUrl: './login.css',
     standalone: true,
-    imports: [FormsModule]
+    imports: [FormsModule, RouterLink]
 })
 export class LoginComponent {
     credencial: Pick<User, 'email' | 'password'> = {
@@ -18,28 +18,46 @@ export class LoginComponent {
         password: ''
     };
 
-    // 2. Inyectamos el Router en el constructor
-    constructor(private authService: AuthService, private router: Router) {}
+    constructor(private authService: AuthService, private router: Router) {
+        if (hasValidSession()) {
+            this.router.navigate(['/home']);
+        }
+    }
 
-    
     onLogin() {
-        localStorage.clear();
-        this.authService.login(this.credencial).subscribe({
-            next: (res) => {
-                console.log("Respuesta del login:", res);
+        const email = this.credencial.email?.trim() ?? '';
+        const password = this.credencial.password?.trim() ?? '';
 
-                const token = res?.token ?? '';
+        if (!email || !password) {
+            alert('Completa tu correo y contraseña para iniciar sesión.');
+            return;
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            alert('Ingresa un correo electrónico válido.');
+            return;
+        }
+
+        localStorage.clear();
+        this.authService.login({ email, password }).subscribe({
+            next: (res) => {
+                const token = res?.token?.trim() ?? '';
                 const userId = res?.user?.id?.toString();
                 const userName = res?.user?.name;
 
-                saveSessionData({ token, userId, userName });
+                if (!token || !userId) {
+                    alert('No se pudo iniciar sesión. Intenta nuevamente.');
+                    return;
+                }
 
-                alert('Inicio de sesio exitoso')
+                saveSessionData({ token, userId, userName });
+                alert('Inicio de sesión exitoso');
                 this.router.navigate(['/home']);
             },
             error: (err) => {
                 console.error('Error al iniciar sesión', err);
-                alert('Hubo un problema con el inicio de sesión');
+                const message = err?.error?.error || 'Hubo un problema con el inicio de sesión';
+                alert(message);
             }
         });
     }

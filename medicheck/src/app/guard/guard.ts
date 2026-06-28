@@ -13,3 +13,14 @@ export const authGuard = () => {
   router.navigate(['/login']);
   return false;
 };
+
+export const publicGuard = () => {
+  const router = inject(Router);
+
+  if (!hasValidSession()) {
+    return true;
+  }
+
+  router.navigate(['/home']);
+  return false;
+};

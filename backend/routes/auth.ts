@@ -38,22 +38,39 @@ function baneoPalabras (texto: string): Boolean{
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
-        
+        const normalizedName = String(name ?? '').trim();
+        const normalizedEmail = String(email ?? '').trim().toLowerCase();
+        const normalizedPassword = String(password ?? '').trim();
 
-        if (baneoPalabras(name)) {
-            res.status(400).json({ 
+        if (!normalizedName || !normalizedEmail || !normalizedPassword) {
+            return res.status(400).json({ error: 'Nombre, correo y contraseña son obligatorios.' });
+        }
+
+        if (normalizedName.length < 3) {
+            return res.status(400).json({ error: 'El nombre debe tener al menos 3 caracteres.' });
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+            return res.status(400).json({ error: 'El correo electrónico no es válido.' });
+        }
+
+        if (normalizedPassword.length < 6) {
+            return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres.' });
+        }
+
+        if (baneoPalabras(normalizedName)) {
+            return res.status(400).json({ 
                 error: "El nombre de usuario contiene términos no permitidos o reservados por el sistema." 
             });
-            return; // Bloquea la inserción y termina la petición aquí mismo
         }
 
         // Encriptar la contraseña (hashing)
         const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const hashedPassword = await bcrypt.hash(normalizedPassword, saltRounds);
 
         const result = await sql`
             INSERT INTO users (name, email, password, role)
-            VALUES (${name}, ${email}, ${hashedPassword}, ${role || 'paciente'})
+            VALUES (${normalizedName}, ${normalizedEmail}, ${hashedPassword}, ${role || 'paciente'})
             RETURNING id, name, email, role;
         `;
 
@@ -82,9 +99,19 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        const normalizedEmail = String(email ?? '').trim().toLowerCase();
+        const normalizedPassword = String(password ?? '').trim();
+
+        if (!normalizedEmail || !normalizedPassword) {
+            return res.status(400).json({ error: 'Correo y contraseña son obligatorios.' });
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+            return res.status(400).json({ error: 'El correo electrónico no es válido.' });
+        }
 
         const result = await sql`
-            SELECT * FROM users WHERE email = ${email}
+            SELECT * FROM users WHERE email = ${normalizedEmail}
         `;
 
         const user = result[0];
@@ -93,7 +120,7 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: "Inicio de sesión fallido" });
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = await bcrypt.compare(normalizedPassword, user.password);
 
         if (!passwordMatch) {
             return res.status(400).json({ error: "Inicio de sesión fallido" });

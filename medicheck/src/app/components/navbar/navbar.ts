@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { clearSessionData, hasValidSession } from '../../utils/session';
 
 @Component({
@@ -8,12 +8,23 @@ import { clearSessionData, hasValidSession } from '../../utils/session';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './navbar.html',
-  styleUrl: './navbar.css' // <-- ¡Esta es la línea clave que conecta el diseño!
+  styleUrl: './navbar.css'
 })
 export class NavbarComponent {
-  isMenuOpen: boolean = false;
+  isMenuOpen = false;
+  isAuthPage = false;
 
-  constructor(private router: Router) {}
+  private readonly authRoutes = ['/login', '/register', '/forgot-password', '/form-new-password'];
+
+  constructor(private router: Router) {
+    this.syncAuthPageState(this.router.url);
+
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.syncAuthPageState(event.urlAfterRedirects);
+      }
+    });
+  }
 
   get isLoggedIn(): boolean {
     return hasValidSession();
@@ -30,5 +41,10 @@ export class NavbarComponent {
 
   closeMenu(): void {
     this.isMenuOpen = false;
+  }
+
+  private syncAuthPageState(url: string): void {
+    const normalizedUrl = url.split('?')[0].split('#')[0];
+    this.isAuthPage = this.authRoutes.includes(normalizedUrl);
   }
 }

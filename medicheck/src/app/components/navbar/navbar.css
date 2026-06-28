@@ -13,6 +13,20 @@
   z-index: 1000;
 }
 
+.navbar.auth-navbar {
+  justify-content: center;
+}
+
+.navbar.auth-navbar .navbar-logo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar.auth-navbar .navbar-logo a {
+  justify-content: center;
+}
+
 .navbar-logo a {
   display: flex;
   align-items: center;
