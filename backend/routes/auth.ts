@@ -176,7 +176,7 @@ router.post('/forgot-password', async (req, res) => {
                 pass: process.env.EMAIL_PASS
             }
         });
-        const resetLink = `http://localhost:4200/form-new-password?token=${resetToken}`;
+        const resetLink = `http://192.168.100.14:4200/#/form-new-password?token=${resetToken}`;
 
         await transporter.sendMail({
             from: `"Medicheck Soporte" <${process.env.EMAIL_USER}>`,

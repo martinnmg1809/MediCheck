@@ -20,6 +20,6 @@ app.use('/api/tomas',        tomasRoutes);
 app.use('/api/medicamentos', medicamentosRoutes);
 app.use('/api/sintomas',     sintomasRoutes);      // ← NUEVO
 
-app.listen(3000, () => {
-    console.log('Servidor del Backend escuchando en http://localhost:3000');
+app.listen(3000, '0.0.0.0', () => {
+    console.log('Servidor del Backend escuchando en http://0.0.0.0:3000');
 });

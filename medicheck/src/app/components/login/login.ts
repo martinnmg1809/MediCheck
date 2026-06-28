@@ -56,7 +56,7 @@ export class LoginComponent {
             },
             error: (err) => {
                 console.error('Error al iniciar sesión', err);
-                const message = err?.error?.error || 'Hubo un problema con el inicio de sesión';
+                const message = JSON.stringify(err) || 'Hubo un problema con el inicio de sesión';
                 alert(message);
             }
         });

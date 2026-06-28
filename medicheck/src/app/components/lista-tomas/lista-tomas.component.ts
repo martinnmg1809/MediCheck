@@ -80,7 +80,7 @@ export class ListaTomasComponent implements OnInit {
 
  cargarLista(): void {
     this.cargandoInicial = true;
-    this.http.get<any[]>(`http://localhost:3000/api/tomas/usuario/${this.usuarioId}/historial`).subscribe({
+    this.http.get<any[]>(`http://192.168.100.14:3000/api/tomas/usuario/${this.usuarioId}/historial`).subscribe({
       next: (data) => {
         this.medicamentos = data;
 
@@ -121,7 +121,7 @@ export class ListaTomasComponent implements OnInit {
   }
 
   marcarTomado(tomaId: number): void {
-    this.http.put(`http://localhost:3000/api/tomas/verificar/${tomaId}`, {}).subscribe({
+    this.http.put(`http://192.168.100.14:3000/api/tomas/verificar/${tomaId}`, {}).subscribe({
       next: () => {
         this.cargarLista();
       },

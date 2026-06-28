@@ -39,7 +39,7 @@ export class EditarTratamiento implements OnInit {
   }
 
   cargarDatosTratamiento(): void {
-    this.http.get<any>(`http://localhost:3000/api/tomas/tratamiento/${this.tratamientoId}`).subscribe({
+    this.http.get<any>(`http://192.168.100.14:3000/api/tomas/tratamiento/${this.tratamientoId}`).subscribe({
       next: (data) => {
         this.formulario.tratamiento = data.nombre;
         this.formulario.medicamento_id = data.medicamento_id;
@@ -62,7 +62,7 @@ export class EditarTratamiento implements OnInit {
     this.error = '';
 
     this.http.put(
-      `http://localhost:3000/api/tomas/tratamiento/${this.tratamientoId}`,
+      `http://192.168.100.14:3000/api/tomas/tratamiento/${this.tratamientoId}`,
       this.formulario
     ).subscribe({
       next: () => {

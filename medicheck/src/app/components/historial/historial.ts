@@ -38,7 +38,7 @@ export class Historial implements OnInit {
     this.cargando = true;
 
     this.http.get<any[]>(
-      `http://localhost:3000/api/tomas/usuario/${this.usuarioId}/cumplimiento`
+      `http://192.168.100.14:3000/api/tomas/usuario/${this.usuarioId}/cumplimiento`
     ).subscribe({
       next: (data) => {
         this.historial = Array.isArray(data) ? data : [];
