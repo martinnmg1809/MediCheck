@@ -1,26 +1,30 @@
 /* ═══════════════════════════════════════════════════════════
-   ver-sintomas.css
+   ver-sintomas.css — scroll nativo
    ═══════════════════════════════════════════════════════════ */
 
 .vs-container {
   max-width: 760px;
   margin: 0 auto;
-  padding: 24px 20px 60px;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  padding: 0 0 60px;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   color: #2c3e50;
 }
 
-/* ── ENCABEZADO ─────────────────────────────────────────── */
+/* ── ENCABEZADO STICKY ───────────────────────────────────── */
 .vs-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 2px 8px rgba(15,23,42,0.07);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.vs-header-text {
-  flex: 1;
-}
+.vs-header-text { flex: 1; }
 
 .vs-header h2 {
   margin: 0 0 2px;
@@ -61,12 +65,12 @@
 }
 .btn-nuevo:hover { background: #00796b; }
 
-/* ── CONTROLES DE ORDEN ─────────────────────────────────── */
+/* ── CONTROLES DE ORDEN ──────────────────────────────────── */
 .vs-controles {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 18px;
+  margin: 16px 20px;
   flex-wrap: wrap;
 }
 
@@ -76,10 +80,7 @@
   white-space: nowrap;
 }
 
-.vs-orden-btns {
-  display: flex;
-  gap: 6px;
-}
+.vs-orden-btns { display: flex; gap: 6px; }
 
 .btn-orden {
   padding: 6px 14px;
@@ -91,23 +92,16 @@
   cursor: pointer;
   transition: all 0.15s;
 }
+.btn-orden:hover          { border-color: #009688; color: #009688; }
+.btn-orden--activo        { background: #009688; border-color: #009688; color: #fff; font-weight: 600; }
 
-.btn-orden:hover { border-color: #009688; color: #009688; }
-
-.btn-orden--activo {
-  background: #009688;
-  border-color: #009688;
-  color: #fff;
-  font-weight: 600;
-}
-
-/* ── CARGANDO ───────────────────────────────────────────── */
+/* ── CARGANDO ────────────────────────────────────────────── */
 .vs-cargando {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  padding: 60px 0;
+  padding: 60px 20px;
   color: #7f8c8d;
 }
 
@@ -119,22 +113,20 @@
   border-radius: 50%;
   animation: spin 0.75s linear infinite;
 }
-
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── ESTADO VACÍO ───────────────────────────────────────── */
+/* ── VACÍO ───────────────────────────────────────────────── */
 .vs-vacio {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  padding: 60px 0;
+  padding: 60px 20px;
   text-align: center;
   color: #7f8c8d;
 }
-
 .vs-vacio-icono { font-size: 3rem; }
-.vs-vacio p { margin: 0; font-size: 0.95rem; }
+.vs-vacio p     { margin: 0; font-size: 0.95rem; }
 
 .btn-nuevo-grande {
   background: #009688;
@@ -149,61 +141,56 @@
 }
 .btn-nuevo-grande:hover { background: #00796b; }
 
-/* ── LISTA ──────────────────────────────────────────────── */
+/* ── LISTA ───────────────────────────────────────────────── */
 .vs-lista {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding: 0 20px 40px;
 }
 
-/* ── TARJETA ────────────────────────────────────────────── */
+/* ── TARJETA ─────────────────────────────────────────────── */
 .vs-tarjeta {
   display: grid;
-  grid-template-columns: 1fr 1.6fr auto;
+  grid-template-columns: 1fr 1.4fr auto auto;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   background: #fff;
   border: 1px solid #e8ecef;
   border-radius: 14px;
-  padding: 16px 18px;
+  padding: 14px 16px;
   box-shadow: 0 2px 6px rgba(0,0,0,.04);
   transition: box-shadow 0.15s;
 }
-
 .vs-tarjeta:hover { box-shadow: 0 4px 14px rgba(0,0,0,.08); }
 
-/* Izquierda: icono + nombre */
 .vs-tarjeta-izq {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
-.vs-icono {
-  font-size: 1.8rem;
-  flex-shrink: 0;
-}
+.vs-icono   { font-size: 1.8rem; flex-shrink: 0; }
 
 .vs-nombre {
   margin: 0 0 2px;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: #2c3e50;
 }
 
 .vs-categoria {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: #95a5a6;
   text-transform: uppercase;
   letter-spacing: .4px;
 }
 
-/* Centro: barra de intensidad */
 .vs-tarjeta-centro {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .vs-barra-fondo {
@@ -220,11 +207,10 @@
 }
 
 .vs-intensidad-texto {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 600;
 }
 
-/* Derecha: fecha y hora */
 .vs-tarjeta-der {
   text-align: right;
   flex-shrink: 0;
@@ -232,7 +218,7 @@
 
 .vs-fecha {
   margin: 0 0 2px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #2c3e50;
   white-space: nowrap;
@@ -240,24 +226,50 @@
 
 .vs-hora {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: #7f8c8d;
 }
 
-/* ── RESPONSIVE ─────────────────────────────────────────── */
-@media (max-width: 560px) {
+/* ── ACCIONES ────────────────────────────────────────────── */
+.vs-tarjeta-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-editar-sint,
+.btn-eliminar-sint {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.btn-editar-sint {
+  background: #e8f8f5;
+  color: #009688;
+  border: 1px solid #b2dfdb;
+}
+.btn-editar-sint:hover { background: #b2dfdb; }
+
+.btn-eliminar-sint {
+  background: #fdecea;
+  color: #c0392b;
+  border: 1px solid #f5b7b1;
+}
+.btn-eliminar-sint:hover { background: #f5b7b1; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 600px) {
   .vs-tarjeta {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
   }
-
-  .vs-tarjeta-der {
-    text-align: left;
-  }
-
-  .vs-fecha, .vs-hora {
-    display: inline;
-  }
-
-  .vs-hora::before { content: ' · '; }
+  .vs-tarjeta-centro { grid-column: 1 / -1; }
+  .vs-tarjeta-acciones { flex-direction: row; }
+  .vs-tarjeta-der { text-align: left; }
 }

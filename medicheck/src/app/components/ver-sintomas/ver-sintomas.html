@@ -1,6 +1,6 @@
 <div class="vs-container">
 
-  <!-- ENCABEZADO -->
+  <!-- ENCABEZADO STICKY -->
   <header class="vs-header">
     <button class="btn-volver" (click)="volver()">← Volver</button>
     <div class="vs-header-text">
@@ -14,37 +14,35 @@
   <div class="vs-controles" *ngIf="!cargando">
     <span class="vs-orden-label">Ordenar por fecha:</span>
     <div class="vs-orden-btns">
-      <button
-        class="btn-orden"
-        [class.btn-orden--activo]="orden === 'desc'"
-        (click)="cambiarOrden('desc')"
-        type="button">
+      <button class="btn-orden"
+              [class.btn-orden--activo]="orden === 'desc'"
+              (click)="cambiarOrden('desc')" type="button">
         ↓ Más reciente
       </button>
-      <button
-        class="btn-orden"
-        [class.btn-orden--activo]="orden === 'asc'"
-        (click)="cambiarOrden('asc')"
-        type="button">
+      <button class="btn-orden"
+              [class.btn-orden--activo]="orden === 'asc'"
+              (click)="cambiarOrden('asc')" type="button">
         ↑ Más antiguo
       </button>
     </div>
   </div>
 
-  <!-- ESTADO CARGANDO -->
+  <!-- CARGANDO -->
   <div *ngIf="cargando" class="vs-cargando">
     <div class="spinner"></div>
     <p>Cargando historial…</p>
   </div>
 
-  <!-- ESTADO VACÍO -->
+  <!-- VACÍO -->
   <div *ngIf="!cargando && historial.length === 0" class="vs-vacio">
     <span class="vs-vacio-icono">🩺</span>
     <p>No tienes síntomas registrados aún.</p>
-    <button class="btn-nuevo-grande" (click)="registrarNuevo()">Registrar mi primer síntoma</button>
+    <button class="btn-nuevo-grande" (click)="registrarNuevo()">
+      Registrar mi primer síntoma
+    </button>
   </div>
 
-  <!-- LISTA DE REGISTROS -->
+  <!-- LISTA -->
   <div class="vs-lista" *ngIf="!cargando && historial.length > 0">
     <div class="vs-tarjeta" *ngFor="let item of historial">
 
@@ -57,16 +55,16 @@
         </div>
       </div>
 
-      <!-- Intensidad -->
+      <!-- Barra de intensidad -->
       <div class="vs-tarjeta-centro">
         <div class="vs-barra-fondo">
-          <div
-            class="vs-barra-relleno"
-            [style.width.%]="item.intensidad * 10"
-            [style.background]="getColorIntensidad(item.intensidad)">
+          <div class="vs-barra-relleno"
+               [style.width.%]="item.intensidad * 10"
+               [style.background]="getColorIntensidad(item.intensidad)">
           </div>
         </div>
-        <span class="vs-intensidad-texto" [style.color]="getColorIntensidad(item.intensidad)">
+        <span class="vs-intensidad-texto"
+              [style.color]="getColorIntensidad(item.intensidad)">
           {{ item.intensidad }}/10 — {{ getEtiqueta(item.intensidad) }}
         </span>
       </div>
@@ -75,6 +73,20 @@
       <div class="vs-tarjeta-der">
         <p class="vs-fecha">{{ formatearFecha(item.fecha) }}</p>
         <p class="vs-hora">{{ item.hora }}</p>
+      </div>
+
+      <!-- Acciones -->
+      <div class="vs-tarjeta-acciones">
+        <button class="btn-editar-sint"
+                (click)="editarSintoma(item)"
+                type="button">
+          ✏️ Editar
+        </button>
+        <button class="btn-eliminar-sint"
+                (click)="eliminarSintoma(item)"
+                type="button">
+          🗑️ Eliminar
+        </button>
       </div>
 
     </div>

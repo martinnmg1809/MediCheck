@@ -1,0 +1,118 @@
+<div class="dt-container">
+
+  <!-- ── ENCABEZADO FIJO ── -->
+  <header class="dt-header">
+    <button class="btn-volver" (click)="volver()">← Volver</button>
+    <div class="dt-header-text">
+      <h2>{{ nombreTratamiento || 'Detalle del tratamiento' }}</h2>
+      <p class="dt-subtitulo" *ngIf="medicamento">{{ medicamento }} · {{ concentracion }}</p>
+    </div>
+  </header>
+
+  <!-- ── ÁREA SCROLLEABLE ── -->
+  <div class="dt-scroll-area">
+
+    <!-- CARGANDO -->
+    <div *ngIf="cargando" class="dt-cargando">
+      <div class="spinner"></div>
+      <p>Cargando detalle…</p>
+    </div>
+
+    <ng-container *ngIf="!cargando">
+
+      <!-- ── RESUMEN ESTADÍSTICO ── -->
+      <div class="dt-resumen">
+
+        <div class="dt-stat">
+          <span class="dt-stat-valor">{{ tomasVerificadas }}</span>
+          <span class="dt-stat-label">Tomadas</span>
+        </div>
+        <div class="dt-stat">
+          <span class="dt-stat-valor">{{ totalTomas - tomasVerificadas }}</span>
+          <span class="dt-stat-label">Pendientes</span>
+        </div>
+        <div class="dt-stat">
+          <span class="dt-stat-valor">{{ totalTomas }}</span>
+          <span class="dt-stat-label">Total</span>
+        </div>
+
+        <!-- Barra de cumplimiento -->
+        <div class="dt-barra-wrap">
+          <div class="dt-barra-fondo">
+            <div class="dt-barra-relleno"
+                 [style.width.%]="porcentaje"
+                 [style.background]="getColorBarra()">
+            </div>
+          </div>
+          <span class="dt-pct" [style.color]="getColorBarra()">{{ porcentaje }}% cumplido</span>
+        </div>
+
+      </div>
+
+      <!-- ── LÍNEA DE TIEMPO POR DÍA ── -->
+      <div class="dt-timeline" *ngIf="dias.length > 0">
+
+        <div class="dt-dia" *ngFor="let dia of dias">
+
+          <!-- Encabezado del día -->
+          <div class="dt-dia-header">
+            <span class="dt-dia-linea"></span>
+            <span class="dt-dia-etiqueta"
+                  [class.dt-dia-hoy]="esHoy(dia.fecha)"
+                  [class.dt-dia-futuro]="esFuturo(dia.fecha)">
+              {{ esHoy(dia.fecha) ? '📅 Hoy · ' : '' }}{{ dia.fechaTexto }}
+            </span>
+            <span class="dt-dia-linea"></span>
+          </div>
+
+          <!-- Tomas del día -->
+          <div class="dt-tomas-dia">
+            <div class="dt-toma"
+                 *ngFor="let toma of dia.tomas"
+                 [class.dt-toma--tomada]="toma.verificado"
+                 [class.dt-toma--pendiente]="!toma.verificado && !esFuturo(dia.fecha)"
+                 [class.dt-toma--futura]="!toma.verificado && esFuturo(dia.fecha)">
+
+              <!-- Ícono de estado -->
+              <div class="dt-toma-icono">
+                <span *ngIf="toma.verificado">✅</span>
+                <span *ngIf="!toma.verificado && !esFuturo(dia.fecha)">❌</span>
+                <span *ngIf="!toma.verificado && esFuturo(dia.fecha)">🕐</span>
+              </div>
+
+              <!-- Información principal -->
+              <div class="dt-toma-info">
+                <p class="dt-toma-hora-prog">
+                  Programada: <strong>{{ toma.hora_programada }}</strong>
+                </p>
+                <p class="dt-toma-med">{{ toma.nombre_comercial }} · {{ toma.concentracion }}</p>
+
+                <!-- Si fue tomada: muestra hora real y si fue tarde -->
+                <p class="dt-toma-hora-real" *ngIf="toma.verificado && toma.hora_real">
+                  Tomada a las <strong>{{ toma.hora_real }}</strong>
+                  <span class="dt-badge-tarde" *ngIf="tomadaTarde(toma)">tarde</span>
+                  <span class="dt-badge-tiempo" *ngIf="!tomadaTarde(toma)">a tiempo</span>
+                </p>
+              </div>
+
+              <!-- Badge de estado (derecha) -->
+              <div class="dt-toma-badge">
+                <span *ngIf="toma.verificado"  class="badge-ok">Tomada</span>
+                <span *ngIf="!toma.verificado && !esFuturo(dia.fecha)" class="badge-no">Omitida</span>
+                <span *ngIf="!toma.verificado && esFuturo(dia.fecha)"  class="badge-prox">Próxima</span>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Estado vacío -->
+      <div *ngIf="dias.length === 0" class="dt-vacio">
+        <p>No hay tomas registradas para este tratamiento.</p>
+      </div>
+
+    </ng-container>
+  </div><!-- fin dt-scroll-area -->
+</div>

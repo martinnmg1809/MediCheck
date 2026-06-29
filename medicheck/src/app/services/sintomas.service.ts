@@ -15,8 +15,8 @@ export interface RegistroSintoma {
   sintoma_categoria: string;
   sintoma_icono: string;
   intensidad: number;
-  fecha: string;  // 'YYYY-MM-DD'
-  hora: string;   // 'HH:MM'
+  fecha: string;   // 'YYYY-MM-DD'
+  hora: string;    // 'HH:MM'
 }
 
 @Injectable({ providedIn: 'root' })
@@ -25,12 +25,12 @@ export class SintomasService {
 
   constructor(private http: HttpClient) {}
 
-  /** Devuelve el catálogo de síntomas disponibles */
+  /** Catálogo de síntomas disponibles */
   getCatalogo(): Observable<CatalogoSintoma[]> {
     return this.http.get<CatalogoSintoma[]>(`${this.BASE}/catalogo`);
   }
 
-  /** Registra un síntoma para el usuario */
+  /** Registra un síntoma */
   registrar(userId: number, sintomaId: number, intensidad: number): Observable<any> {
     return this.http.post(this.BASE, {
       user_id:    userId,
@@ -39,9 +39,24 @@ export class SintomasService {
     });
   }
 
-  /** Obtiene el historial de síntomas del usuario, ordenado por fecha */
+  /** Historial de síntomas del usuario */
   getHistorial(userId: number, orden: 'asc' | 'desc' = 'desc'): Observable<RegistroSintoma[]> {
     const params = new HttpParams().set('orden', orden);
     return this.http.get<RegistroSintoma[]>(`${this.BASE}/usuario/${userId}`, { params });
+  }
+
+  /** Obtiene un registro por id — usa /registro/:id para no chocar con /catalogo */
+  getRegistroById(id: number): Observable<RegistroSintoma> {
+    return this.http.get<RegistroSintoma>(`${this.BASE}/registro/${id}`);
+  }
+
+  /** Actualiza la intensidad de un registro */
+  actualizarIntensidad(id: number, intensidad: number): Observable<any> {
+    return this.http.put(`${this.BASE}/registro/${id}`, { intensidad });
+  }
+
+  /** Elimina un registro */
+  eliminar(id: number): Observable<any> {
+    return this.http.delete(`${this.BASE}/registro/${id}`);
   }
 }

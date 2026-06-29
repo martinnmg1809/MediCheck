@@ -1,0 +1,47 @@
+<div class="rs-container">
+  <header class="rs-header">
+    <button class="btn-volver" (click)="volver()">← Volver</button>
+    <div class="rs-header-text">
+      <h2>Editar Síntoma</h2>
+      <p class="rs-subtitulo">Ajusta la intensidad de este registro</p>
+    </div>
+  </header>
+
+  <div class="rs-scroll-area">
+    <div *ngIf="cargando" class="rs-cargando">
+      <div class="spinner"></div>
+      <p>Cargando datos...</p>
+    </div>
+
+    <section class="rs-seccion rs-seccion-intensidad" *ngIf="!cargando && datosSintoma">
+      <h3 class="rs-step-label">Modificar intensidad</h3>
+
+      <!-- El síntoma que estamos editando -->
+      <div class="rs-sintoma-preview">
+        <span class="preview-nombre">Registro de las {{ datosSintoma.hora }}</span>
+      </div>
+
+      <div class="rs-escala">
+        <button
+          *ngFor="let n of [1,2,3,4,5,6,7,8,9,10]"
+          class="rs-escala-btn"
+          [class.rs-escala-btn--activo]="intensidad === n"
+          [style.--color]="getColorIntensidad()"
+          (click)="setIntensidad(n)"
+          type="button">
+          {{ n }}
+        </button>
+      </div>
+
+      <div class="rs-etiqueta-intensidad" [style.color]="getColorIntensidad()">
+        <span class="etiqueta-dot" [style.background]="getColorIntensidad()"></span>
+        {{ getEtiquetaIntensidad() }} ({{ intensidad }}/10)
+      </div>
+
+      <button class="btn-guardar" (click)="guardar()" [disabled]="guardando">
+        <span *ngIf="!guardando">💾 Guardar Cambios</span>
+        <span *ngIf="guardando">Guardando...</span>
+      </button>
+    </section>
+  </div>
+</div>

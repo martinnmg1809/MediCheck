@@ -1,6 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
 /* ==========================================================================
-   CONFIGURACIÓN GLOBAL DE PANTALLA (COMPORTAMIENTO APP NATIVA)
+   CONFIGURACIÓN GLOBAL
    ========================================================================== */
 
 * {
@@ -23,6 +22,7 @@ html, body {
 
 body {
   min-height: 100dvh;
+  overflow-y: auto;   /* scroll nativo en el body */
 }
 
 button, input, select, textarea {
@@ -38,7 +38,7 @@ app-root {
   flex-direction: column;
   min-height: 100dvh;
   width: 100%;
-  overflow: hidden;
+  /* overflow: hidden  ← ELIMINADO, era el causante del problema */
 }
 
 .contenedor-scroll, main {

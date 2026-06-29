@@ -14,9 +14,9 @@ type OrdenDir = 'asc' | 'desc';
 })
 export class VerSintomasComponent implements OnInit {
 
-  historial:  RegistroSintoma[] = [];
+  historial: RegistroSintoma[] = [];
   cargando  = true;
-  orden: OrdenDir = 'desc';     // más reciente primero por defecto
+  orden: OrdenDir = 'desc';
 
   private userId = 0;
 
@@ -56,42 +56,51 @@ export class VerSintomasComponent implements OnInit {
     });
   }
 
-  // ── Cambiar dirección de orden y recargar ────────────────────
   cambiarOrden(dir: OrdenDir): void {
     if (this.orden === dir) return;
     this.orden = dir;
     this.cargarHistorial();
   }
 
-  // ── Formatear fecha 'YYYY-MM-DD' → 'DD de mes YYYY' ─────────
-  formatearFecha(fecha: string): string {
-    if (!fecha) return '—';
-    // Evitamos problemas de zona horaria parseando manualmente
-    const [year, month, day] = fecha.split('-').map(Number);
-    const d = new Date(year, month - 1, day);
-    return d.toLocaleDateString('es-CL', {
-      day:   '2-digit',
-      month: 'long',
-      year:  'numeric'
+  // Navega a la pantalla de edición con el id del registro
+  editarSintoma(item: RegistroSintoma): void {
+    this.router.navigate(['/editar-sintoma', item.id]);
+  }
+
+  // Elimina directamente sin modal
+  eliminarSintoma(item: RegistroSintoma): void {
+    this.sintomasService.eliminar(item.id).subscribe({
+      next: () => {
+        this.historial = this.historial.filter(h => h.id !== item.id);
+        this.cdr.detectChanges();
+      },
+      error: () => {}
     });
   }
 
-  // ── Color según intensidad ───────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────────
+  formatearFecha(fecha: string): string {
+    if (!fecha) return '—';
+    const [year, month, day] = fecha.split('-').map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString('es-CL', {
+      day: '2-digit', month: 'long', year: 'numeric'
+    });
+  }
+
   getColorIntensidad(intensidad: number): string {
-    if (intensidad <= 3)  return '#2ecc71';
-    if (intensidad <= 6)  return '#f39c12';
+    if (intensidad <= 3) return '#2ecc71';
+    if (intensidad <= 6) return '#f39c12';
     return '#e74c3c';
   }
 
   getEtiqueta(intensidad: number): string {
-    if (intensidad <= 2)  return 'Muy leve';
-    if (intensidad <= 4)  return 'Leve';
-    if (intensidad <= 6)  return 'Moderado';
-    if (intensidad <= 8)  return 'Intenso';
+    if (intensidad <= 2) return 'Muy leve';
+    if (intensidad <= 4) return 'Leve';
+    if (intensidad <= 6) return 'Moderado';
+    if (intensidad <= 8) return 'Intenso';
     return 'Muy intenso';
   }
 
-  // ── Navegación ───────────────────────────────────────────────
-  volver(): void { this.router.navigate(['/home']); }
+  volver(): void         { this.router.navigate(['/home']); }
   registrarNuevo(): void { this.router.navigate(['/registrar-sintomas']); }
 }
