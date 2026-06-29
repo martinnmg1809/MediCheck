@@ -36,7 +36,7 @@ export class FormularioTomaComponent implements OnInit {
     }
 
     // Carga el catálogo maestro de medicamentos disponibles
-    this.http.get<any[]>('http://192.168.100.14:3000/api/medicamentos').subscribe({
+    this.http.get<any[]>('http://localhost:3000/api/medicamentos').subscribe({
       next: (data) => this.medicamentos = data,
       error: (err) => console.error('Error cargando catálogo de medicamentos:', err)
     });
@@ -71,7 +71,7 @@ export class FormularioTomaComponent implements OnInit {
       duracion_dias: this.duracionDias
     };
 
-    this.http.post('http://192.168.100.14:3000/api/tomas', datos).subscribe({
+    this.http.post('http://localhost:3000/api/tomas', datos).subscribe({
       next: () => {
         this.agregando = false;
         this.router.navigate(['/list']);

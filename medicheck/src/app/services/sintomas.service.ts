@@ -21,7 +21,7 @@ export interface RegistroSintoma {
 
 @Injectable({ providedIn: 'root' })
 export class SintomasService {
-  private readonly BASE = 'http://192.168.100.14:3000/api/sintomas';
+  private readonly BASE = 'http://localhost:3000/api/sintomas';
 
   constructor(private http: HttpClient) {}
 
