@@ -10,14 +10,21 @@ import sintomasRoutes from './routes/sintomas';   // ← NUEVO
 
 const app = express();
 
-const allowedOrigins = [
-    process.env.FRONTEND_URL || 'http://localhost:4000',
-    'http://localhost:4200',
-];
+const allowedOrigins = process.env.FRONTEND_URL
+    ? [process.env.FRONTEND_URL]
+    : [];
+
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) callback(null, true);
-        else callback(new Error('Not allowed by CORS'));
+        // Sin origin (curl, apps nativas) → permitir
+        if (!origin) return callback(null, true);
+        // Frontend de producción configurado
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        // Cualquier origen localhost (dev web + APK Capacitor con http/https scheme)
+        if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return callback(null, true);
+        // Capacitor scheme alternativo
+        if (origin === 'capacitor://localhost') return callback(null, true);
+        callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
 }));
