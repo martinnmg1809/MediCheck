@@ -147,40 +147,43 @@ router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
 
-        // 1. Verificar si existe
-        const userResult = await sql`SELECT id FROM users WHERE email = ${email}`;
-        if (userResult.length === 0) {
-            return res.status(200).json({ message: "Si el correo existe, se enviará un enlace." });
+        if (!email) {
+            return res.status(400).json({ error: "El correo es obligatorio." });
         }
 
-        // 2. Generar token de seguridad (requiere: import crypto from 'crypto';)
+        // 1. Verificar si el correo está registrado
+        const userResult = await sql`SELECT id FROM users WHERE email = ${email}`;
+        if (userResult.length === 0) {
+            return res.status(404).json({ error: "El correo no está registrado en el sistema." });
+        }
+
+        // 2. Generar token de recuperación (1 hora de vigencia)
         const resetToken = crypto.randomBytes(32).toString('hex');
-        const tokenExpires = Date.now() + 3600000; // 1 hora
+        const tokenExpires = Date.now() + 3600000;
 
         await sql`
-            UPDATE users 
-            SET reset_token = ${resetToken}, reset_token_expires = ${tokenExpires} 
+            UPDATE users
+            SET reset_token = ${resetToken}, reset_token_expires = ${tokenExpires}
             WHERE email = ${email}
         `;
 
-        //Chequeo de si las variables de inicio de sesion se cargan correctamente para enviar el correo
-        console.log("Intentando enviar correo desde:", process.env.EMAIL_USER);
-        console.log("Contraseña cargada:", process.env.EMAIL_PASS ? "SÍ" : "NO");
-
-
-        // 4. Enviar el correo (requiere configurar nodemailer)
+        // 3. Enviar el correo con timeout para evitar que la petición quede colgada
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
-            }
+            },
+            connectionTimeout: 10000,
+            greetingTimeout: 5000,
+            socketTimeout: 10000
         });
+
         const resetLink = `http://192.168.100.14:4200/#/form-new-password?token=${resetToken}`;
 
         await transporter.sendMail({
             from: `"Medicheck Soporte" <${process.env.EMAIL_USER}>`,
-            to: email, // Aquí es donde viaja tu correo temporal válido
+            to: email,
             subject: "Recuperación de Contraseña - Medicheck",
             text: `Haz clic en el siguiente enlace para cambiar tu contraseña: ${resetLink}`
         });
@@ -189,7 +192,7 @@ router.post('/forgot-password', async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Error al procesar la solicitud." });
+        res.status(500).json({ error: "No se pudo enviar el correo. Intenta nuevamente más tarde." });
     }
 });
 
