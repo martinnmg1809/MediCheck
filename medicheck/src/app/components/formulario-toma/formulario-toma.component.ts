@@ -15,6 +15,7 @@ export class FormularioTomaComponent implements OnInit {
   medicamentos: any[] = [];
   filtroTexto: string = '';
   medicamentoSeleccionado: string = '';
+  medicamentoInfo: any = null;
   nuevoHorario: string = '08:00';
   frecuencia: number = 8;
   duracionDias: number = 7;
@@ -44,10 +45,25 @@ export class FormularioTomaComponent implements OnInit {
 
   filtrarMedicamentos(): any[] {
     if (!this.filtroTexto) return this.medicamentos;
-    return this.medicamentos.filter(m => 
+    return this.medicamentos.filter(m =>
       m.nombre_comercial.toLowerCase().includes(this.filtroTexto.toLowerCase()) ||
       m.principio_activo.toLowerCase().includes(this.filtroTexto.toLowerCase())
     );
+  }
+
+  // Se ejecuta al elegir un medicamento del select. Si es de alto riesgo,
+  // bloquea la frecuencia al valor predefinido (el usuario solo elige la primera toma).
+  actualizarMedicamentoInfo(): void {
+    const id = parseInt(this.medicamentoSeleccionado, 10);
+    this.medicamentoInfo = this.medicamentos.find(m => m.id === id) || null;
+
+    if (this.medicamentoInfo?.es_riesgo) {
+      this.frecuencia = this.medicamentoInfo.frecuencia_horas_fija;
+    }
+  }
+
+  get esRiesgo(): boolean {
+    return !!this.medicamentoInfo?.es_riesgo;
   }
 
   crearTratamiento(): void {

@@ -1,8 +1,9 @@
 import { Router, Request, Response } from 'express';
-import { sql } from '../db/database'; 
+import { sql } from '../db/database';
 import fs from 'fs';
 import path from 'path';
 import { error } from 'console';
+import { buscarRiesgoPorPrincipioActivo } from '../config/medicamentosRiesgo';
 
 
 const router = Router();
@@ -32,6 +33,36 @@ function baneoPalabras (texto: string): Boolean{
     return palabrasBaneadas.some(palabra=>textoMinusculas.includes(palabra));
 }
 
+// Determina la frecuencia (horas) real a usar para un medicamento dado.
+// Si el medicamento es de alto riesgo, IGNORA lo que haya mandado el cliente
+// y fuerza el intervalo predefinido (nunca confiar en ese dato desde el front).
+// También valida que la frecuencia sea un número positivo, evitando que
+// `24 / frecuencia_horas` produzca Infinity/NaN.
+async function resolverFrecuenciaHoras(
+    medicamento_id: number,
+    frecuenciaSolicitada: number
+): Promise<{ frecuencia: number } | { error: string }> {
+    const medResult = await sql`
+        SELECT principio_activo FROM medicamentos WHERE id = ${medicamento_id}
+    `;
+
+    if (medResult.length === 0) {
+        return { error: "Medicamento no encontrado en el catálogo." };
+    }
+
+    const riesgo = buscarRiesgoPorPrincipioActivo(medResult[0].principio_activo);
+    if (riesgo) {
+        return { frecuencia: riesgo.frecuenciaHorasFija };
+    }
+
+    const frecuenciaNum = Number(frecuenciaSolicitada);
+    if (!Number.isFinite(frecuenciaNum) || frecuenciaNum <= 0) {
+        return { error: "La frecuencia (cada cuántas horas) debe ser un número mayor a 0." };
+    }
+
+    return { frecuencia: frecuenciaNum };
+}
+
 // 1. REGISTRAR UN NUEVO TRATAMIENTO (POST /api/tomas)
 // Calcula y genera ráfagas de tomas automáticas proyectadas a futuro en la BDD
 // 1. REGISTRAR UN NUEVO TRATAMIENTO Y SUS TOMAS (POST /api/tomas)
@@ -48,15 +79,23 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
             res.status(400).json({ error: "El nombre del tratamiento es requerido." });
             return;
         }
+
+        const resultadoFrecuencia = await resolverFrecuenciaHoras(medicamento_id, frecuencia_horas);
+        if ('error' in resultadoFrecuencia) {
+            res.status(400).json({ error: resultadoFrecuencia.error });
+            return;
+        }
+        const frecuenciaHorasFinal = resultadoFrecuencia.frecuencia;
+
         const tratamientoResult = await sql`
             INSERT INTO tratamientos (user_id, nombre, activo)
             VALUES (${user_id}, ${tratamiento}, true)
             RETURNING id
         `;
-        
+
         const idTratamientoValido = tratamientoResult[0].id;
 
-        const tomasPorDia = 24 / frecuencia_horas;
+        const tomasPorDia = 24 / frecuenciaHorasFinal;
         const tomasTotales = tomasPorDia * duracion_dias;
 
         const [hora, minutos] = horario_inicio.split(':');
@@ -75,7 +114,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
             `;
             queries.push(query);
 
-            fechaActual.setHours(fechaActual.getHours() + frecuencia_horas);
+            fechaActual.setHours(fechaActual.getHours() + frecuenciaHorasFinal);
         }
         
         await Promise.all(queries);
@@ -184,9 +223,16 @@ router.put('/tratamiento/:tratamiento_id', async (req: Request, res: Response): 
             return;
         }
 
+        const resultadoFrecuencia = await resolverFrecuenciaHoras(medicamento_id, frecuencia_horas);
+        if ('error' in resultadoFrecuencia) {
+            res.status(400).json({ error: resultadoFrecuencia.error });
+            return;
+        }
+        const frecuenciaHorasFinal = resultadoFrecuencia.frecuencia;
+
         // Actualizar nombre del tratamiento
         await sql`
-            UPDATE tratamientos 
+            UPDATE tratamientos
             SET nombre = ${tratamiento}
             WHERE id = ${tratamiento_id}
         `;
@@ -200,7 +246,7 @@ router.put('/tratamiento/:tratamiento_id', async (req: Request, res: Response): 
         `;
 
         // Regenerar tomas con los nuevos datos
-        const tomasPorDia = 24 / frecuencia_horas;
+        const tomasPorDia = 24 / frecuenciaHorasFinal;
         const tomasTotales = tomasPorDia * duracion_dias;
 
         const [hora, minutos] = horario_inicio.split(':');
@@ -216,7 +262,7 @@ router.put('/tratamiento/:tratamiento_id', async (req: Request, res: Response): 
                 SELECT user_id, ${medicamento_id}, ${tratamiento_id}, ${fechaCompleta}::timestamptz
                 FROM tratamientos WHERE id = ${tratamiento_id}
             `);
-            fechaActual.setHours(fechaActual.getHours() + frecuencia_horas);
+            fechaActual.setHours(fechaActual.getHours() + frecuenciaHorasFinal);
         }
 
         await Promise.all(queries);

@@ -16,6 +16,7 @@ export class EditarTratamiento implements OnInit {
   guardando: boolean = false;
   mensaje: string = '';
   error: string = '';
+  medicamentoInfo: any = null;
 
   formulario = {
     tratamiento: '',
@@ -46,11 +47,31 @@ export class EditarTratamiento implements OnInit {
         this.formulario.horario_inicio = data.horario_inicio || '';
         this.formulario.frecuencia_horas = data.frecuencia_horas || 8;
         this.formulario.duracion_dias = data.duracion_dias || 7;
+        this.cargarInfoRiesgoMedicamento();
       },
       error: () => {
         this.error = 'No se pudieron cargar los datos del tratamiento.';
       }
     });
+  }
+
+  // Consulta el catálogo para saber si el medicamento de este tratamiento es de
+  // alto riesgo. Si lo es, fuerza la frecuencia al valor fijo predefinido y el
+  // select de frecuencia queda bloqueado en el template.
+  cargarInfoRiesgoMedicamento(): void {
+    this.http.get<any[]>('http://localhost:3000/api/medicamentos').subscribe({
+      next: (medicamentos) => {
+        this.medicamentoInfo = medicamentos.find(m => m.id === this.formulario.medicamento_id) || null;
+        if (this.medicamentoInfo?.es_riesgo) {
+          this.formulario.frecuencia_horas = this.medicamentoInfo.frecuencia_horas_fija;
+        }
+      },
+      error: (err) => console.error('Error cargando catálogo de medicamentos:', err)
+    });
+  }
+
+  get esRiesgo(): boolean {
+    return !!this.medicamentoInfo?.es_riesgo;
   }
 
   guardarCambios(): void {

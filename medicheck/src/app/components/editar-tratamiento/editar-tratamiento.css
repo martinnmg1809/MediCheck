@@ -69,6 +69,24 @@
   border-color: #F1C0C0;
 }
 
+.alerta-aviso {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid #F5C16C;
+  background: #FFF4E5;
+  color: #8A5A00;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.campo select:disabled,
+.campo input:disabled {
+  background: #ECECEC;
+  color: #777;
+  cursor: not-allowed;
+}
+
 .campo {
   display: grid;
   gap: 10px;

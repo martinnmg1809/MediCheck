@@ -11,12 +11,16 @@
       <label>Medicamento</label>
       <input type="text" class="input-moderno mb-2" [(ngModel)]="filtroTexto" placeholder="Buscar nombre...">
       
-      <select class="select-moderno" [(ngModel)]="medicamentoSeleccionado">
+      <select class="select-moderno" [(ngModel)]="medicamentoSeleccionado" (ngModelChange)="actualizarMedicamentoInfo()">
         <option value="" disabled selected>Selecciona el resultado</option>
         <option *ngFor="let med of filtrarMedicamentos()" [value]="med.id">
           {{ med.nombre_comercial }} ({{ med.concentracion }})
         </option>
       </select>
+    </div>
+
+    <div class="aviso-riesgo" *ngIf="esRiesgo">
+      ⚠️ Medicamento de alto riesgo: el intervalo de toma es fijo por seguridad ({{ medicamentoInfo.motivo_riesgo }}). Solo puedes definir la hora de la primera toma.
     </div>
 
     <div class="campo-grupo">
@@ -29,10 +33,10 @@
         <label>Primera Toma</label>
         <input type="time" class="input-moderno" [(ngModel)]="nuevoHorario">
       </div>
-      
+
       <div class="campo-grupo">
         <label>Cada (horas)</label>
-        <input type="number" class="input-moderno" [(ngModel)]="frecuencia" placeholder="Ej: 8" min="1">
+        <input type="number" class="input-moderno" [(ngModel)]="frecuencia" placeholder="Ej: 8" min="1" [disabled]="esRiesgo">
       </div>
     </div>
 
