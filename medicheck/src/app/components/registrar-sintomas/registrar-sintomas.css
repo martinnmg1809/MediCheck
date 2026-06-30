@@ -7,7 +7,7 @@
 .rs-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;           /* ocupa la pantalla completa */
+  height: 100%;            /* ocupa el espacio disponible en main */
   max-width: 720px;
   margin: 0 auto;
   font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;

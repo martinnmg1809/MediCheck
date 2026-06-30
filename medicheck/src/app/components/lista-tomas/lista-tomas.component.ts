@@ -46,56 +46,60 @@ export class ListaTomasComponent implements OnInit {
   }
 
   generarDiasSemana(): void {
-    this.diasSemana = []; // Limpiamos el arreglo por seguridad
-    const hoy = new Date();
-    
-    // Configuramos un formateador nativo con la zona horaria de Chile
     const formateadorFecha = new Intl.DateTimeFormat('es-CL', {
       timeZone: 'America/Santiago',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
+      year: 'numeric', month: '2-digit', day: '2-digit'
     });
 
+    const partesFecha = (d: Date) => {
+      const p = formateadorFecha.format(d).split('-');
+      return `${p[2]}-${p[1]}-${p[0]}`; // YYYY-MM-DD
+    };
+
+    const hoyISO = partesFecha(new Date());
+
+    // Recoger fechas únicas de las tomas devueltas por el backend
+    const fechasEnDatos = new Set<string>(
+      (this.medicamentos || []).map(item => item.fecha_exacta)
+    );
+
+    // Unir con los próximos 7 días para que siempre aparezcan días futuros
     for (let i = 0; i < 7; i++) {
-      const fecha = new Date();
-      fecha.setDate(hoy.getDate() + i);
-      
-      // Formatea a "DD-MM-YYYY" respetando la zona horaria de Chile
-      const partes = formateadorFecha.format(fecha).split('-');
-      // Lo transformamos a "YYYY-MM-DD" para que sea idéntico al TO_CHAR de tu base de datos
-      const localISOTime = `${partes[2]}-${partes[1]}-${partes[0]}`;
-      
-      const nombreDia = i === 0 ? 'Hoy' : fecha.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric' });
-      
-      this.diasSemana.push({ 
-        nombre: nombreDia.charAt(0).toUpperCase() + nombreDia.slice(1), // Primera letra en mayúscula
-        valor: localISOTime 
-      });
+      const f = new Date();
+      f.setDate(f.getDate() + i);
+      fechasEnDatos.add(partesFecha(f));
     }
 
-    // Aseguramos que el día seleccionado por defecto sea el primero de la lista ('Hoy')
-    this.diaSeleccionado = this.diasSemana[0].valor; 
+    // Ordenar cronológicamente y construir las pestañas
+    this.diasSemana = Array.from(fechasEnDatos)
+      .sort()
+      .map(iso => {
+        const [y, m, d] = iso.split('-').map(Number);
+        const fecha = new Date(y, m - 1, d);
+        let nombre: string;
+        if (iso === hoyISO) {
+          nombre = 'Hoy';
+        } else {
+          nombre = fecha.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric' });
+          nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+        }
+        return { nombre, valor: iso };
+      });
+
+    // Seleccionar: primer día con tomas pendientes, o hoy si no hay ninguno
+    const primerPendiente = this.diasSemana.find(d =>
+      (this.medicamentos || []).some(m => m.fecha_exacta === d.valor && !m.verificado)
+    );
+    this.diaSeleccionado = primerPendiente ? primerPendiente.valor : hoyISO;
   }
 
- cargarLista(): void {
+  cargarLista(): void {
     this.cargandoInicial = true;
     this.http.get<any[]>(`http://localhost:3000/api/tomas/usuario/${this.usuarioId}/historial`).subscribe({
       next: (data) => {
         this.medicamentos = data;
-
-        // SOLUCIÓN PARCHE: Si hay datos y las tomas son antiguas, 
-        // obligamos a la app a mirar el día del primer medicamento devuelto
-        if (this.medicamentos.length > 0) {
-          const tieneTomasParaHoy = this.medicamentos.some(item => item.fecha_exacta === this.diaSeleccionado);
-          
-          // Si no hay nada programado para hoy, muéstrame el día de la primera toma disponible
-          if (!tieneTomasParaHoy) {
-            this.diaSeleccionado = this.medicamentos[0].fecha_exacta;
-          }
-        }
-
-        this.filtrarPorDia(); 
+        this.generarDiasSemana();
+        this.filtrarPorDia();
         this.cargandoInicial = false;
         this.cdr.detectChanges();
       },

@@ -49,6 +49,60 @@
         </div>
       </div>
 
+      <!-- BOTÓN VER DETALLE -->
+      <button
+        class="btn-ver-detalle"
+        (click)="toggleDetalle(item.tratamiento_id)"
+        type="button">
+        {{ tratamientoExpandido === item.tratamiento_id ? '▲ Ocultar detalle' : '▼ Ver medicamentos tomados' }}
+      </button>
+
+      <!-- PANEL EXPANDIBLE -->
+      <div class="detalle-panel" *ngIf="tratamientoExpandido === item.tratamiento_id">
+
+        <div *ngIf="cargandoDetalle[item.tratamiento_id]" class="detalle-cargando">
+          Cargando…
+        </div>
+
+        <ng-container *ngIf="!cargandoDetalle[item.tratamiento_id]">
+
+          <div *ngIf="detalleTomas[item.tratamiento_id]?.length === 0" class="detalle-vacio">
+            No hay tomas registradas para este tratamiento.
+          </div>
+
+          <table class="detalle-tabla" *ngIf="(detalleTomas[item.tratamiento_id]?.length ?? 0) > 0">
+            <thead>
+              <tr>
+                <th>Medicamento</th>
+                <th>Fecha</th>
+                <th>Programado</th>
+                <th>Tomado a las</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let toma of detalleTomas[item.tratamiento_id]"
+                  [class.fila-tomada]="toma.verificado"
+                  [class.fila-pendiente]="!toma.verificado">
+                <td>
+                  <span class="toma-med-nombre">{{ toma.nombre_comercial }}</span>
+                  <span class="toma-med-detalle">{{ toma.principio_activo }} {{ toma.concentracion }}</span>
+                </td>
+                <td>{{ formatearFechaCorta(toma.fecha) }}</td>
+                <td class="toma-hora">{{ toma.horario_programado }}</td>
+                <td class="toma-hora">{{ toma.verificado ? toma.hora_real : '—' }}</td>
+                <td>
+                  <span class="toma-badge" [class.toma-badge--ok]="toma.verificado" [class.toma-badge--no]="!toma.verificado">
+                    {{ toma.verificado ? '✓ Tomado' : '✗ Pendiente' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </ng-container>
+      </div>
+
     </div>
   </div>
 </div>

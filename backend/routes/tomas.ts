@@ -141,7 +141,7 @@ router.get('/usuario/:user_id/historial', async (req: Request, res: Response): P
         const { user_id } = req.params;
         
         const result = await sql`
-            SELECT 
+            SELECT
                 tm.id AS toma_id,
                 m.nombre_comercial,
                 m.principio_activo,
@@ -153,10 +153,16 @@ router.get('/usuario/:user_id/historial', async (req: Request, res: Response): P
             FROM tomas_medicamentos tm
             JOIN medicamentos m ON tm.medicamento_id = m.id
             WHERE tm.user_id = ${user_id}
-              -- 👇 FILTRO DE RANGO SEMANAL 👇
-              -- Trae desde las 00:00:00 de hoy en Chile hasta 7 días más adelante
-              AND tm.horario::timestamptz AT TIME ZONE 'America/Santiago' >= (CURRENT_DATE AT TIME ZONE 'America/Santiago')
-              AND tm.horario::timestamptz AT TIME ZONE 'America/Santiago' < (CURRENT_DATE + INTERVAL '7 days')
+              AND (
+                -- Tomas pendientes de cualquier fecha (para que el usuario pueda recuperarlas)
+                tm.verificado = FALSE
+                OR
+                -- Tomas verificadas dentro de la ventana de 7 días
+                (
+                  tm.horario::timestamptz AT TIME ZONE 'America/Santiago' >= (CURRENT_DATE AT TIME ZONE 'America/Santiago')
+                  AND tm.horario::timestamptz AT TIME ZONE 'America/Santiago' < (CURRENT_DATE + INTERVAL '7 days')
+                )
+              )
             ORDER BY tm.horario ASC;
         `;
         
@@ -319,4 +325,33 @@ router.get('/tratamiento/:tratamiento_id', async (req: Request, res: Response): 
         res.status(500).json({ error: "Error al obtener el tratamiento" });
     }
 });
+// 6. DETALLE DE TOMAS DE UN TRATAMIENTO (GET /api/tomas/tratamiento/:tratamiento_id/tomas)
+router.get('/tratamiento/:tratamiento_id/tomas', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { tratamiento_id } = req.params;
+
+        const result = await sql`
+            SELECT
+                tm.id,
+                m.nombre_comercial,
+                m.principio_activo,
+                m.concentracion,
+                TO_CHAR(tm.horario::timestamptz AT TIME ZONE 'America/Santiago', 'YYYY-MM-DD') AS fecha,
+                TO_CHAR(tm.horario::timestamptz AT TIME ZONE 'America/Santiago', 'HH24:MI')    AS horario_programado,
+                tm.verificado,
+                TO_CHAR(tm.fecha_real_toma AT TIME ZONE 'America/Santiago', 'YYYY-MM-DD')      AS fecha_real,
+                TO_CHAR(tm.fecha_real_toma AT TIME ZONE 'America/Santiago', 'HH24:MI')         AS hora_real
+            FROM tomas_medicamentos tm
+            JOIN medicamentos m ON tm.medicamento_id = m.id
+            WHERE tm.tratamiento_id = ${tratamiento_id}
+            ORDER BY tm.horario ASC;
+        `;
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('Error en GET /tratamiento/:id/tomas:', error);
+        res.status(500).json({ error: 'Error al obtener el detalle del tratamiento.' });
+    }
+});
+
 export default router;

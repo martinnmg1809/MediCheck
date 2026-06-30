@@ -234,12 +234,21 @@ router.post('/reset-password', async (req, res) => {
 router.get('/treatments/:userId', async (req, res) => {
     try{
         const { userId } = req.params;
-        
+
         const tratamientos = await sql`
-            SELECT * 
-            FROM tratamientos 
-            WHERE user_id = ${userId} and activo = true 
-        `
+            SELECT * FROM tratamientos
+            WHERE user_id = ${userId}
+              AND (
+                activo = true
+                OR id = (
+                  SELECT id FROM tratamientos
+                  WHERE user_id = ${userId} AND activo = false
+                  ORDER BY id DESC LIMIT 1
+                )
+              )
+            ORDER BY activo DESC, id DESC
+        `;
+
         res.status(200).json({ treatments: tratamientos });
     }
     catch (error) {

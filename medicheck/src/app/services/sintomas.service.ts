@@ -44,4 +44,14 @@ export class SintomasService {
     const params = new HttpParams().set('orden', orden);
     return this.http.get<RegistroSintoma[]>(`${this.BASE}/usuario/${userId}`, { params });
   }
+
+  /** Actualiza la intensidad de un síntoma registrado */
+  actualizar(registroId: number, intensidad: number): Observable<any> {
+    return this.http.put(`${this.BASE}/${registroId}`, { intensidad });
+  }
+
+  /** Elimina un síntoma registrado */
+  eliminar(registroId: number): Observable<any> {
+    return this.http.delete(`${this.BASE}/${registroId}`);
+  }
 }

@@ -16,6 +16,7 @@ export class HomeComponent implements OnInit {
   userId: string | null = null;
   token: string | null = null;
   TratamientosActivos: any[] = [];
+  ultimoFinalizado:    any | null = null;
   proximaToma: any | null = null;
 
   constructor(
@@ -32,7 +33,9 @@ export class HomeComponent implements OnInit {
     if (this.userId) {
       this.authService.getTreatments(this.userId).subscribe({
         next: (res) => {
-          this.TratamientosActivos = res.treatments;
+          const todos = res.treatments ?? [];
+          this.TratamientosActivos = todos.filter((t: any) => t.activo);
+          this.ultimoFinalizado    = todos.find((t: any) => !t.activo) ?? null;
           this.cdr.detectChanges();
         },
         error: (err) => console.error('Error al obtener tratamientos', err)
@@ -62,6 +65,7 @@ export class HomeComponent implements OnInit {
       this.authService.eliminarTratamiento(id).subscribe({
         next: () => {
           this.TratamientosActivos = this.TratamientosActivos.filter((t: any) => t.id !== id);
+          if (this.ultimoFinalizado?.id === id) this.ultimoFinalizado = null;
           this.cdr.detectChanges();
         },
         error: () => console.error('No se pudo eliminar el tratamiento.')

@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SintomasService, RegistroSintoma } from '../../services/sintomas.service';
 
@@ -8,7 +9,7 @@ type OrdenDir = 'asc' | 'desc';
 @Component({
   selector: 'app-ver-sintomas',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './ver-sintomas.html',
   styleUrl:    './ver-sintomas.css'
 })
@@ -16,7 +17,14 @@ export class VerSintomasComponent implements OnInit {
 
   historial:  RegistroSintoma[] = [];
   cargando  = true;
-  orden: OrdenDir = 'desc';     // más reciente primero por defecto
+  orden: OrdenDir = 'desc';
+
+  editandoItem:    RegistroSintoma | null = null;
+  nuevaIntensidad: number = 5;
+  guardando = false;
+
+  eliminandoItem:  RegistroSintoma | null = null;
+  eliminando = false;
 
   private userId = 0;
 
@@ -89,6 +97,61 @@ export class VerSintomasComponent implements OnInit {
     if (intensidad <= 6)  return 'Moderado';
     if (intensidad <= 8)  return 'Intenso';
     return 'Muy intenso';
+  }
+
+  // ── Edición ──────────────────────────────────────────────────
+  abrirEditar(item: RegistroSintoma): void {
+    this.editandoItem    = item;
+    this.nuevaIntensidad = item.intensidad;
+  }
+
+  cerrarModal(): void {
+    if (this.guardando) return;
+    this.editandoItem = null;
+  }
+
+  guardarEdicion(): void {
+    if (!this.editandoItem || this.guardando) return;
+    this.guardando = true;
+
+    this.sintomasService.actualizar(this.editandoItem.id, this.nuevaIntensidad).subscribe({
+      next: () => {
+        this.editandoItem!.intensidad = this.nuevaIntensidad;
+        this.guardando    = false;
+        this.editandoItem = null;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.guardando = false;
+      }
+    });
+  }
+
+  // ── Eliminación ──────────────────────────────────────────────
+  abrirConfirmEliminar(item: RegistroSintoma): void {
+    this.eliminandoItem = item;
+  }
+
+  cerrarConfirmEliminar(): void {
+    if (this.eliminando) return;
+    this.eliminandoItem = null;
+  }
+
+  confirmarEliminar(): void {
+    if (!this.eliminandoItem || this.eliminando) return;
+    this.eliminando = true;
+
+    this.sintomasService.eliminar(this.eliminandoItem.id).subscribe({
+      next: () => {
+        this.historial = this.historial.filter(i => i.id !== this.eliminandoItem!.id);
+        this.eliminando     = false;
+        this.eliminandoItem = null;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.eliminando = false;
+      }
+    });
   }
 
   // ── Navegación ───────────────────────────────────────────────

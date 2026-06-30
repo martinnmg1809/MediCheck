@@ -127,4 +127,66 @@ router.get('/usuario/:user_id', async (req: Request, res: Response): Promise<voi
     }
 });
 
+// ─────────────────────────────────────────────────────────────
+// ELIMINAR UN SÍNTOMA REGISTRADO
+// DELETE /api/sintomas/:id
+// ─────────────────────────────────────────────────────────────
+router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+
+        const result = await sql`
+            DELETE FROM registro_sintomas
+            WHERE id = ${id}
+            RETURNING id;
+        `;
+
+        if (result.length === 0) {
+            res.status(404).json({ error: 'Registro no encontrado.' });
+            return;
+        }
+
+        res.status(200).json({ message: 'Síntoma eliminado correctamente.' });
+
+    } catch (error) {
+        console.error('Error en DELETE /sintomas/:id:', error);
+        res.status(500).json({ error: 'Error interno al eliminar el síntoma.' });
+    }
+});
+
+// ─────────────────────────────────────────────────────────────
+// ACTUALIZAR INTENSIDAD DE UN SÍNTOMA REGISTRADO
+// PUT /api/sintomas/:id
+// Body: { intensidad }
+// ─────────────────────────────────────────────────────────────
+router.put('/:id', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { intensidad } = req.body;
+
+        if (intensidad === undefined || intensidad < 1 || intensidad > 10) {
+            res.status(400).json({ error: 'La intensidad debe estar entre 1 y 10.' });
+            return;
+        }
+
+        const result = await sql`
+            UPDATE registro_sintomas
+            SET intensidad = ${intensidad}
+            WHERE id = ${id}
+            RETURNING id, intensidad;
+        `;
+
+        if (result.length === 0) {
+            res.status(404).json({ error: 'Registro no encontrado.' });
+            return;
+        }
+
+        res.status(200).json({ message: 'Síntoma actualizado correctamente.', ...result[0] });
+
+    } catch (error) {
+        console.error('Error en PUT /sintomas/:id:', error);
+        res.status(500).json({ error: 'Error interno al actualizar el síntoma.' });
+    }
+});
+
 export default router;

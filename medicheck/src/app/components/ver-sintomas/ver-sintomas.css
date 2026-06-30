@@ -244,6 +244,167 @@
   color: #7f8c8d;
 }
 
+/* ── BOTONES ACCIÓN TARJETA ─────────────────────────────── */
+.vs-tarjeta-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+  margin-top: 6px;
+}
+
+.btn-editar,
+.btn-eliminar {
+  background: none;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.btn-editar {
+  border: 1px solid #bdc3c7;
+  color: #555;
+}
+.btn-editar:hover { border-color: #009688; color: #009688; }
+
+.btn-eliminar {
+  border: 1px solid #e0b0b0;
+  color: #c0392b;
+}
+.btn-eliminar:hover { border-color: #c0392b; background: #fdf0f0; }
+
+/* ── MODAL ──────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 24px 24px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.18);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-titulo {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.modal-sintoma {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-icono { font-size: 2rem; }
+
+.modal-nombre {
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.modal-categoria {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #95a5a6;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.modal-slider-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-slider {
+  width: 100%;
+  accent-color: #009688;
+  cursor: pointer;
+}
+
+.modal-valor {
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.modal-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-cancelar {
+  padding: 10px 20px;
+  border: 1.5px solid #dfe6e9;
+  border-radius: 10px;
+  background: none;
+  font-size: 0.88rem;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-cancelar:hover:not(:disabled) { background: #f0f0f0; }
+.btn-cancelar:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-guardar {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  background: #009688;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-guardar:hover:not(:disabled) { background: #00796b; }
+.btn-guardar:disabled { opacity: .6; cursor: not-allowed; }
+
+/* Modal de confirmación — variante peligro */
+.modal-card--danger .modal-titulo { color: #c0392b; }
+
+.modal-aviso {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  text-align: center;
+}
+
+.btn-eliminar-confirm {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  background: #e74c3c;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-eliminar-confirm:hover:not(:disabled) { background: #c0392b; }
+.btn-eliminar-confirm:disabled { opacity: .6; cursor: not-allowed; }
+
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 560px) {
   .vs-tarjeta {

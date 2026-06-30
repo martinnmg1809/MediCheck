@@ -15,6 +15,10 @@ export class Historial implements OnInit {
   cargando: boolean = true;
   usuarioId: number = 0;
 
+  tratamientoExpandido: number | null = null;
+  detalleTomas: { [id: number]: any[] } = {};
+  cargandoDetalle: { [id: number]: boolean } = {};
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -65,6 +69,39 @@ export class Historial implements OnInit {
     return new Date(fecha).toLocaleDateString('es-CL', {
       day: '2-digit', month: 'long', year: 'numeric',
       hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  toggleDetalle(tratamientoId: number): void {
+    if (this.tratamientoExpandido === tratamientoId) {
+      this.tratamientoExpandido = null;
+      return;
+    }
+    this.tratamientoExpandido = tratamientoId;
+    if (!this.detalleTomas[tratamientoId]) {
+      this.cargandoDetalle[tratamientoId] = true;
+      this.http.get<any[]>(
+        `http://localhost:3000/api/tomas/tratamiento/${tratamientoId}/tomas`
+      ).subscribe({
+        next: (data) => {
+          this.detalleTomas[tratamientoId] = data;
+          this.cargandoDetalle[tratamientoId] = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.detalleTomas[tratamientoId] = [];
+          this.cargandoDetalle[tratamientoId] = false;
+          this.cdr.detectChanges();
+        }
+      });
+    }
+  }
+
+  formatearFechaCorta(fecha: string): string {
+    if (!fecha) return '—';
+    const [y, m, d] = fecha.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('es-CL', {
+      day: '2-digit', month: 'short', year: 'numeric'
     });
   }
 

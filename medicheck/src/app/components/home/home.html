@@ -38,7 +38,7 @@
       </div>
     </ng-template>
 
-    <div *ngIf="TratamientosActivos.length === 0" class="empty-state">
+    <div *ngIf="TratamientosActivos.length === 0 && !ultimoFinalizado" class="empty-state">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#bdc3c7"
            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -47,6 +47,7 @@
       <p>No tienes tratamientos activos en este momento.</p>
     </div>
 
+    <!-- TRATAMIENTOS EN CURSO -->
     <div class="treatments-grid" *ngIf="TratamientosActivos.length > 0">
       <div class="treatment-card" *ngFor="let tratamiento of TratamientosActivos">
 
@@ -68,6 +69,35 @@
         <div class="card-actions">
           <button class="btn-editar"   (click)="editarTratamiento(tratamiento.id)">✏️ Editar</button>
           <button class="btn-eliminar" (click)="eliminarTratamiento(tratamiento.id)">🗑️ Eliminar</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ÚLTIMO TRATAMIENTO FINALIZADO -->
+    <div *ngIf="ultimoFinalizado" class="ultimo-finalizado-seccion">
+      <h4 class="ultimo-finalizado-titulo">Último tratamiento finalizado</h4>
+      <div class="treatment-card treatment-card--finalizado">
+
+        <div class="card-header">
+          <div class="icon-wrapper icon-wrapper--finalizado">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7f8c8d"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <span class="badge finalizado">Finalizado</span>
+        </div>
+
+        <div class="card-body">
+          <h4>{{ ultimoFinalizado.nombre }}</h4>
+          <p class="start-date">Iniciado: {{ ultimoFinalizado.fecha_inicio | date:'dd/MM/yyyy' }}</p>
+        </div>
+
+        <div class="card-actions">
+          <button class="btn-historial" (click)="irAHistorial()">📋 Ver historial completo</button>
+          <button class="btn-eliminar"  (click)="eliminarTratamiento(ultimoFinalizado.id)">🗑️ Eliminar</button>
         </div>
 
       </div>

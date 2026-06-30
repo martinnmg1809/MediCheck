@@ -71,13 +71,79 @@
         </span>
       </div>
 
-      <!-- Fecha y hora -->
+      <!-- Fecha, hora y botón editar -->
       <div class="vs-tarjeta-der">
         <p class="vs-fecha">{{ formatearFecha(item.fecha) }}</p>
         <p class="vs-hora">{{ item.hora }}</p>
+        <div class="vs-tarjeta-acciones">
+          <button class="btn-editar"   (click)="abrirEditar(item)"           type="button">✏️ Editar</button>
+          <button class="btn-eliminar" (click)="abrirConfirmEliminar(item)"  type="button">🗑️ Eliminar</button>
+        </div>
       </div>
 
     </div>
   </div>
 
+</div>
+
+<!-- MODAL CONFIRMAR ELIMINACIÓN -->
+<div class="modal-overlay" *ngIf="eliminandoItem" (click)="cerrarConfirmEliminar()">
+  <div class="modal-card modal-card--danger" (click)="$event.stopPropagation()">
+
+    <h3 class="modal-titulo">Eliminar registro</h3>
+
+    <div class="modal-sintoma">
+      <span class="modal-icono">{{ eliminandoItem.sintoma_icono }}</span>
+      <div>
+        <p class="modal-nombre">{{ eliminandoItem.sintoma_nombre }}</p>
+        <p class="modal-categoria">{{ formatearFecha(eliminandoItem.fecha) }} · {{ eliminandoItem.hora }}</p>
+      </div>
+    </div>
+
+    <p class="modal-aviso">Esta acción no se puede deshacer.</p>
+
+    <div class="modal-acciones">
+      <button class="btn-cancelar" (click)="cerrarConfirmEliminar()" [disabled]="eliminando" type="button">Cancelar</button>
+      <button class="btn-eliminar-confirm" (click)="confirmarEliminar()" [disabled]="eliminando" type="button">
+        {{ eliminando ? 'Eliminando…' : 'Sí, eliminar' }}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL EDITAR INTENSIDAD -->
+<div class="modal-overlay" *ngIf="editandoItem" (click)="cerrarModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+
+    <h3 class="modal-titulo">Editar intensidad</h3>
+
+    <div class="modal-sintoma">
+      <span class="modal-icono">{{ editandoItem.sintoma_icono }}</span>
+      <div>
+        <p class="modal-nombre">{{ editandoItem.sintoma_nombre }}</p>
+        <p class="modal-categoria">{{ editandoItem.sintoma_categoria }}</p>
+      </div>
+    </div>
+
+    <div class="modal-slider-wrap">
+      <input
+        type="range"
+        min="1" max="10" step="1"
+        [(ngModel)]="nuevaIntensidad"
+        class="modal-slider"
+      />
+      <span class="modal-valor" [style.color]="getColorIntensidad(nuevaIntensidad)">
+        {{ nuevaIntensidad }}/10 — {{ getEtiqueta(nuevaIntensidad) }}
+      </span>
+    </div>
+
+    <div class="modal-acciones">
+      <button class="btn-cancelar" (click)="cerrarModal()" [disabled]="guardando" type="button">Cancelar</button>
+      <button class="btn-guardar" (click)="guardarEdicion()" [disabled]="guardando" type="button">
+        {{ guardando ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+
+  </div>
 </div>
