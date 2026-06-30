@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { API_BASE_URL } from '../../config/api.config';
 
 @Component({
   selector: 'app-editar-tratamiento',
@@ -40,7 +41,7 @@ export class EditarTratamiento implements OnInit {
   }
 
   cargarDatosTratamiento(): void {
-    this.http.get<any>(`http://localhost:3000/api/tomas/tratamiento/${this.tratamientoId}`).subscribe({
+    this.http.get<any>(`${API_BASE_URL}/api/tomas/tratamiento/${this.tratamientoId}`).subscribe({
       next: (data) => {
         this.formulario.tratamiento = data.nombre;
         this.formulario.medicamento_id = data.medicamento_id;
@@ -59,7 +60,7 @@ export class EditarTratamiento implements OnInit {
   // alto riesgo. Si lo es, fuerza la frecuencia al valor fijo predefinido y el
   // select de frecuencia queda bloqueado en el template.
   cargarInfoRiesgoMedicamento(): void {
-    this.http.get<any[]>('http://localhost:3000/api/medicamentos').subscribe({
+    this.http.get<any[]>(`${API_BASE_URL}/api/medicamentos`).subscribe({
       next: (medicamentos) => {
         this.medicamentoInfo = medicamentos.find(m => m.id === this.formulario.medicamento_id) || null;
         if (this.medicamentoInfo?.es_riesgo) {
@@ -83,7 +84,7 @@ export class EditarTratamiento implements OnInit {
     this.error = '';
 
     this.http.put(
-      `http://localhost:3000/api/tomas/tratamiento/${this.tratamientoId}`,
+      `${API_BASE_URL}/api/tomas/tratamiento/${this.tratamientoId}`,
       this.formulario
     ).subscribe({
       next: () => {

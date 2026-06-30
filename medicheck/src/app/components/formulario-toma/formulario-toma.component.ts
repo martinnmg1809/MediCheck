@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { API_BASE_URL } from '../../config/api.config';
 
 @Component({
   selector: 'app-formulario-toma',
@@ -37,7 +38,7 @@ export class FormularioTomaComponent implements OnInit {
     }
 
     // Carga el catálogo maestro de medicamentos disponibles
-    this.http.get<any[]>('http://localhost:3000/api/medicamentos').subscribe({
+    this.http.get<any[]>(`${API_BASE_URL}/api/medicamentos`).subscribe({
       next: (data) => this.medicamentos = data,
       error: (err) => console.error('Error cargando catálogo de medicamentos:', err)
     });
@@ -87,7 +88,7 @@ export class FormularioTomaComponent implements OnInit {
       duracion_dias: this.duracionDias
     };
 
-    this.http.post('http://localhost:3000/api/tomas', datos).subscribe({
+    this.http.post(`${API_BASE_URL}/api/tomas`, datos).subscribe({
       next: () => {
         this.agregando = false;
         this.router.navigate(['/list']);

@@ -3,6 +3,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common'; // <-- 2. Añ
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { API_BASE_URL } from '../../config/api.config';
+import { RecordatoriosService } from '../../services/recordatorios.service';
 
 @Component({
   selector: 'app-lista-tomas',
@@ -22,10 +24,11 @@ export class ListaTomasComponent implements OnInit {
 
   // 3. Inyectamos el PLATFORM_ID en el constructor
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private recordatoriosService: RecordatoriosService
   ) {}
 
   ngOnInit(): void {
@@ -95,13 +98,14 @@ export class ListaTomasComponent implements OnInit {
 
   cargarLista(): void {
     this.cargandoInicial = true;
-    this.http.get<any[]>(`http://localhost:3000/api/tomas/usuario/${this.usuarioId}/historial`).subscribe({
+    this.http.get<any[]>(`${API_BASE_URL}/api/tomas/usuario/${this.usuarioId}/historial`).subscribe({
       next: (data) => {
         this.medicamentos = data;
         this.generarDiasSemana();
         this.filtrarPorDia();
         this.cargandoInicial = false;
         this.cdr.detectChanges();
+        this.recordatoriosService.sincronizar(this.medicamentos);
       },
       error: (err) => {
         console.error('Error al cargar el historial:', err);
@@ -125,7 +129,7 @@ export class ListaTomasComponent implements OnInit {
   }
 
   marcarTomado(tomaId: number): void {
-    this.http.put(`http://localhost:3000/api/tomas/verificar/${tomaId}`, {}).subscribe({
+    this.http.put(`${API_BASE_URL}/api/tomas/verificar/${tomaId}`, {}).subscribe({
       next: () => {
         this.cargarLista();
       },

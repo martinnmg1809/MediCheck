@@ -187,6 +187,7 @@ router.get('/usuario/:user_id/historial', async (req: Request, res: Response): P
                 m.concentracion,
                 TO_CHAR(tm.horario::timestamptz AT TIME ZONE 'America/Santiago', 'YYYY-MM-DD') AS fecha_exacta,
                 TO_CHAR(tm.horario::timestamptz AT TIME ZONE 'America/Santiago', 'HH24:MI') AS horario_programado,
+                tm.horario AS horario_iso,
                 tm.verificado,
                 tm.fecha_real_toma
             FROM tomas_medicamentos tm
