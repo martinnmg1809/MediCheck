@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: medicheck-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+
+  - type: web
+    name: medicheck-frontend
+    runtime: node
+    rootDir: medicheck
+    buildCommand: npm install && npm run build
+    startCommand: npm run serve:ssr:medicheck
+    envVars:
+      - key: NODE_ENV
+        value: production

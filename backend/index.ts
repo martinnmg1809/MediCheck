@@ -10,7 +10,17 @@ import sintomasRoutes from './routes/sintomas';   // ← NUEVO
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+    process.env.FRONTEND_URL || 'http://localhost:4000',
+    'http://localhost:4200',
+];
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+        else callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+}));
 app.use(express.json());
 
 connectDB();
@@ -20,6 +30,7 @@ app.use('/api/tomas',        tomasRoutes);
 app.use('/api/medicamentos', medicamentosRoutes);
 app.use('/api/sintomas',     sintomasRoutes);      // ← NUEVO
 
-app.listen(3000, '0.0.0.0', () => {
-    console.log('Servidor del Backend escuchando en http://0.0.0.0:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor del Backend escuchando en el puerto ${PORT}`);
 });
