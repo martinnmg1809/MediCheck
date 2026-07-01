@@ -206,28 +206,29 @@ router.post('/reset-password', async (req, res) => {
         }
         
         const userResult = await sql`
-            SELECT id, reset_token_expires FROM users 
+            SELECT id, reset_token_expires FROM users
             WHERE reset_token = ${token}
         `;
-        
-        if (userResult.length === 0){
-            return res.status(400).json("No se han encontrado usuarios")
+
+        if (userResult.length === 0) {
+            return res.status(400).json({ error: "El enlace de recuperación no es válido." });
         }
 
+        const user = userResult[0];
 
-        if (userResult.length != 0) {
-            const user = userResult[0];
-
-            const hashed_pass= await bcrypt.hash(newPassword, 10);
-
-            await sql`
-                UPDATE users 
-                SET password = ${hashed_pass}, reset_token = NULL, reset_token_expires = NULL 
-                WHERE id = ${user.id}        
-            `;
-
-            res.json({ message: "Contraseña actualizada con éxito." });
+        if (Date.now() > Number(user.reset_token_expires)) {
+            return res.status(400).json({ error: "El enlace de recuperación ha expirado. Solicita uno nuevo." });
         }
+
+        const hashed_pass = await bcrypt.hash(newPassword, 10);
+
+        await sql`
+            UPDATE users
+            SET password = ${hashed_pass}, reset_token = NULL, reset_token_expires = NULL
+            WHERE id = ${user.id}
+        `;
+
+        res.json({ message: "Contraseña actualizada con éxito." });
     }
     catch (error) {
         console.error(error);
