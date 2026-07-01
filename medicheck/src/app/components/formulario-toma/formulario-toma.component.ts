@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -28,7 +28,7 @@ export class FormularioTomaComponent implements OnInit {
   errorMsg: string = '';
   nombreBaneado: boolean = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     const idGuardado = localStorage.getItem('user_id');
@@ -43,7 +43,7 @@ export class FormularioTomaComponent implements OnInit {
 
     // Carga el catálogo maestro de medicamentos disponibles
     this.http.get<any[]>(`${API_BASE_URL}/api/medicamentos`).subscribe({
-      next: (data) => this.medicamentos = data,
+      next: (data) => { this.medicamentos = data; this.cdr.detectChanges(); },
       error: (err) => console.error('Error cargando catálogo de medicamentos:', err)
     });
   }
@@ -102,6 +102,14 @@ export class FormularioTomaComponent implements OnInit {
       this.errorMsg = 'El nombre del tratamiento contiene términos no permitidos.';
       return;
     }
+    if (!this.frecuencia || this.frecuencia <= 0) {
+      this.errorMsg = 'La frecuencia debe ser un número mayor a 0.';
+      return;
+    }
+    if (!this.duracionDias || this.duracionDias <= 0) {
+      this.errorMsg = 'La duración debe ser al menos 1 día.';
+      return;
+    }
 
     this.agregando = true;
     const datos = {
@@ -116,12 +124,14 @@ export class FormularioTomaComponent implements OnInit {
     this.http.post(`${API_BASE_URL}/api/tomas`, datos).subscribe({
       next: () => {
         this.agregando = false;
+        this.cdr.detectChanges();
         this.router.navigate(['/list']);
       },
       error: (err) => {
         console.error('Error en el envío del tratamiento:', err);
         this.errorMsg = err?.error?.error || 'Hubo un error al procesar y guardar las tomas futuras.';
         this.agregando = false;
+        this.cdr.detectChanges();
       }
     });
   }

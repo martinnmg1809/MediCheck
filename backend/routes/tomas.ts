@@ -63,10 +63,9 @@ async function resolverFrecuenciaHoras(
     return { frecuencia: frecuenciaNum };
 }
 
-// 1. REGISTRAR UN NUEVO TRATAMIENTO (POST /api/tomas)
-// Calcula y genera ráfagas de tomas automáticas proyectadas a futuro en la BDD
 // 1. REGISTRAR UN NUEVO TRATAMIENTO Y SUS TOMAS (POST /api/tomas)
 router.post('/', async (req: Request, res: Response): Promise<void> => {
+    let idTratamientoCreado: number | null = null;
     try {
         const { user_id, medicamento_id, tratamiento, horario_inicio_iso, frecuencia_horas, duracion_dias } = req.body;
 
@@ -74,9 +73,15 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
             res.status(400).json({error: "Nombre de tratamiento inapropiado"});
             return;
         }
-        
+
         if (!tratamiento) {
             res.status(400).json({ error: "El nombre del tratamiento es requerido." });
+            return;
+        }
+
+        const duracionNum = Number(duracion_dias);
+        if (!Number.isFinite(duracionNum) || duracionNum <= 0) {
+            res.status(400).json({ error: "La duración debe ser un número de días mayor a 0." });
             return;
         }
 
@@ -93,32 +98,36 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
             RETURNING id
         `;
 
-        const idTratamientoValido = tratamientoResult[0].id;
+        idTratamientoCreado = tratamientoResult[0].id;
 
         const tomasPorDia = 24 / frecuenciaHorasFinal;
-        const tomasTotales = tomasPorDia * duracion_dias;
+        const tomasTotales = Math.round(tomasPorDia * duracionNum);
 
         let fechaActual = new Date(horario_inicio_iso);
 
-        const queries = [];
-
         for (let i = 0; i < tomasTotales; i++) {
             const fechaCompleta = fechaActual.toISOString();
-
-            const query = sql`
+            await sql`
                 INSERT INTO tomas_medicamentos (user_id, medicamento_id, tratamiento_id, horario)
-                VALUES (${user_id}, ${medicamento_id}, ${idTratamientoValido}, ${fechaCompleta}::timestamptz)
+                VALUES (${user_id}, ${medicamento_id}, ${idTratamientoCreado}, ${fechaCompleta}::timestamptz)
             `;
-            queries.push(query);
-
             fechaActual = new Date(fechaActual.getTime() + frecuenciaHorasFinal * 3_600_000);
         }
-        
-        await Promise.all(queries);
+
         res.status(201).json({ message: "Tratamiento y tomas programadas con éxito" });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error crítico en POST /api/tomas:", error);
+        // Si el tratamiento ya fue creado pero los inserts de tomas fallaron,
+        // eliminarlo para evitar registros huérfanos que bloqueen reintentos.
+        if (idTratamientoCreado !== null) {
+            try {
+                await sql`DELETE FROM tomas_medicamentos WHERE tratamiento_id = ${idTratamientoCreado}`;
+                await sql`DELETE FROM tratamientos WHERE id = ${idTratamientoCreado}`;
+            } catch (cleanupErr) {
+                console.error("Error limpiando tratamiento huérfano:", cleanupErr);
+            }
+        }
         res.status(500).json({ error: "Error interno al programar el tratamiento" });
     }
 });
@@ -244,23 +253,21 @@ router.put('/tratamiento/:tratamiento_id', async (req: Request, res: Response): 
         `;
 
         // Regenerar tomas con los nuevos datos
+        const duracionNum = Number(duracion_dias);
         const tomasPorDia = 24 / frecuenciaHorasFinal;
-        const tomasTotales = tomasPorDia * duracion_dias;
+        const tomasTotales = Math.round(tomasPorDia * duracionNum);
 
         let fechaActual = new Date(horario_inicio_iso);
 
-        const queries = [];
         for (let i = 0; i < tomasTotales; i++) {
             const fechaCompleta = fechaActual.toISOString();
-            queries.push(sql`
+            await sql`
                 INSERT INTO tomas_medicamentos (user_id, medicamento_id, tratamiento_id, horario)
                 SELECT user_id, ${medicamento_id}, ${tratamiento_id}, ${fechaCompleta}::timestamptz
                 FROM tratamientos WHERE id = ${tratamiento_id}
-            `);
+            `;
             fechaActual = new Date(fechaActual.getTime() + frecuenciaHorasFinal * 3_600_000);
         }
-
-        await Promise.all(queries);
         res.status(200).json({ message: "Tratamiento actualizado con éxito" });
 
     } catch (error) {
