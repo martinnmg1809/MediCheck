@@ -25,7 +25,8 @@
 
     <div class="campo-grupo">
       <label>Tratamiento</label>
-      <input type="text" class="input-moderno mb-2" [(ngModel)]="tratamiento" placeholder="Ej: Amigdalitis">
+      <input type="text" class="input-moderno mb-2" [(ngModel)]="tratamiento" (ngModelChange)="validarTratamiento()" placeholder="Ej: Amigdalitis">
+      <div *ngIf="nombreBaneado" class="aviso-ban">⚠️ El nombre contiene una palabra no permitida.</div>
     </div>
 
     <div class="fila-campos">

@@ -5,6 +5,7 @@ import { User } from '../../models/interfaces';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { hasValidSession, saveSessionData } from '../../utils/session';
+import { contienePalabraBaneada } from '../../utils/palabras-ban';
 
 @Component({
   selector: 'app-register',
@@ -22,6 +23,7 @@ export class RegisterComponent {
     role: 'paciente'
   };
   errorMsg: string = '';
+  nombreBaneado: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {
     if (hasValidSession()) {
@@ -29,8 +31,16 @@ export class RegisterComponent {
     }
   }
 
+  validarNombre(): void {
+    this.nombreBaneado = contienePalabraBaneada(this.nuevoUsuario.name ?? '');
+  }
+
   onRegister() {
     this.errorMsg = '';
+    if (this.nombreBaneado) {
+      this.errorMsg = 'El nombre de usuario contiene términos no permitidos.';
+      return;
+    }
     const name = this.nuevoUsuario.name?.trim() ?? '';
     const email = this.nuevoUsuario.email?.trim().toLowerCase() ?? '';
     const password = this.nuevoUsuario.password?.trim() ?? '';

@@ -10,7 +10,8 @@
 
     <div class="campo">
       <label>Nombre del tratamiento</label>
-      <input type="text" [(ngModel)]="formulario.tratamiento" placeholder="Ej: Tratamiento gripe" />
+      <input type="text" [(ngModel)]="formulario.tratamiento" (ngModelChange)="validarTratamiento()" placeholder="Ej: Tratamiento gripe" />
+      <div *ngIf="nombreBaneado" class="aviso-ban">⚠️ El nombre contiene una palabra no permitida.</div>
     </div>
 
     <div class="campo">

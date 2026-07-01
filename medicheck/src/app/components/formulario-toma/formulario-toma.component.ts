@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { API_BASE_URL } from '../../config/api.config';
+import { contienePalabraBaneada } from '../../utils/palabras-ban';
 
 @Component({
   selector: 'app-formulario-toma',
@@ -25,6 +26,7 @@ export class FormularioTomaComponent implements OnInit {
   tratamiento: string = '';
   minutosPrueba: number | null = null;
   errorMsg: string = '';
+  nombreBaneado: boolean = false;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -82,6 +84,10 @@ export class FormularioTomaComponent implements OnInit {
     return candidata.toISOString();
   }
 
+  validarTratamiento(): void {
+    this.nombreBaneado = contienePalabraBaneada(this.tratamiento);
+  }
+
   crearTratamiento(): void {
     this.errorMsg = '';
     if (!this.medicamentoSeleccionado) {
@@ -90,6 +96,10 @@ export class FormularioTomaComponent implements OnInit {
     }
     if (!this.tratamiento) {
       this.errorMsg = 'Por favor especifica el tratamiento correspondiente.';
+      return;
+    }
+    if (this.nombreBaneado) {
+      this.errorMsg = 'El nombre del tratamiento contiene términos no permitidos.';
       return;
     }
 

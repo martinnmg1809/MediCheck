@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../config/api.config';
+import { contienePalabraBaneada } from '../../utils/palabras-ban';
 
 @Component({
   selector: 'app-editar-tratamiento',
@@ -19,6 +20,7 @@ export class EditarTratamiento implements OnInit {
   error: string = '';
   medicamentoInfo: any = null;
   minutosPrueba: number | null = null;
+  nombreBaneado: boolean = false;
 
   formulario = {
     tratamiento: '',
@@ -72,6 +74,10 @@ export class EditarTratamiento implements OnInit {
     });
   }
 
+  validarTratamiento(): void {
+    this.nombreBaneado = contienePalabraBaneada(this.formulario.tratamiento);
+  }
+
   get esRiesgo(): boolean {
     return !!this.medicamentoInfo?.es_riesgo;
   }
@@ -92,6 +98,10 @@ export class EditarTratamiento implements OnInit {
   guardarCambios(): void {
     if (!this.formulario.tratamiento || !this.formulario.horario_inicio) {
       this.error = 'Por favor completa todos los campos.';
+      return;
+    }
+    if (this.nombreBaneado) {
+      this.error = 'El nombre del tratamiento contiene términos no permitidos.';
       return;
     }
     this.guardando = true;

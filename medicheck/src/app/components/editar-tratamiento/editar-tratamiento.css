@@ -136,6 +136,17 @@
   margin-top: 8px;
 }
 
+.aviso-ban {
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: #FFF3CD;
+  border: 1px solid #FBBF24;
+  border-radius: 8px;
+  color: #92400E;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .campo-prueba {
   padding: 12px 14px;
   border-radius: 12px;

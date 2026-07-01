@@ -104,6 +104,18 @@
   color: #aeaeb2;
 }
 
+/* --- AVISO PALABRA BANEADA (tiempo real) --- */
+.aviso-ban {
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: #FFF3CD;
+  border: 1px solid #FBBF24;
+  border-radius: 8px;
+  color: #92400E;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 /* --- ALERTA DE ERROR --- */
 .alerta-error {
   background: #FDE8E8;

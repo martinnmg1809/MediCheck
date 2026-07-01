@@ -14,13 +14,15 @@
     <form class="auth-form" (ngSubmit)="onRegister()">
       <div class="input-group">
         <label for="name">Nombre Completo</label>
-        <input 
-          type="text" 
-          id="name" 
+        <input
+          type="text"
+          id="name"
           name="name"
-          [(ngModel)]="nuevoUsuario.name" 
+          [(ngModel)]="nuevoUsuario.name"
+          (ngModelChange)="validarNombre()"
           placeholder="Ej. Dra. Ana Silva"
           required>
+        <div *ngIf="nombreBaneado" class="aviso-ban">⚠️ El nombre contiene una palabra no permitida.</div>
       </div>
 
       <div class="input-group">
