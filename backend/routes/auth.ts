@@ -179,8 +179,7 @@ router.post('/forgot-password', async (req, res) => {
             socketTimeout: 10000
         });
 
-        const frontendBase = (process.env.FRONTEND_URL || 'http://localhost:4200').replace(/\/$/, '');
-        const resetLink = `${frontendBase}/#/form-new-password?token=${resetToken}`;
+        const resetLink = `medicheck://form-new-password?token=${resetToken}`;
 
         await transporter.sendMail({
             from: `"Medicheck Soporte" <${process.env.EMAIL_USER}>`,
