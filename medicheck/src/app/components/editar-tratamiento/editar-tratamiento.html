@@ -18,6 +18,14 @@
       <input type="time" [(ngModel)]="formulario.horario_inicio" />
     </div>
 
+    <div class="campo-prueba">
+      <label>🧪 Prueba rápida: primera dosis en
+        <input type="number" [(ngModel)]="minutosPrueba" min="1" placeholder="min">
+        minutos
+      </label>
+      <small>Dejar vacío para usar el horario indicado arriba</small>
+    </div>
+
     <div class="alerta-aviso" *ngIf="esRiesgo">
       ⚠️ Medicamento de alto riesgo: el intervalo de toma es fijo por seguridad ({{ medicamentoInfo.motivo_riesgo }}). Solo puedes definir la hora de la primera toma.
     </div>

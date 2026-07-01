@@ -68,7 +68,7 @@ async function resolverFrecuenciaHoras(
 // 1. REGISTRAR UN NUEVO TRATAMIENTO Y SUS TOMAS (POST /api/tomas)
 router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { user_id, medicamento_id, tratamiento, horario_inicio, frecuencia_horas, duracion_dias } = req.body; 
+        const { user_id, medicamento_id, tratamiento, horario_inicio_iso, frecuencia_horas, duracion_dias } = req.body;
 
         if(baneoPalabras(tratamiento)){
             res.status(400).json({error: "Nombre de tratamiento inapropiado"});
@@ -98,23 +98,20 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
         const tomasPorDia = 24 / frecuenciaHorasFinal;
         const tomasTotales = tomasPorDia * duracion_dias;
 
-        const [hora, minutos] = horario_inicio.split(':');
-        let fechaActual = new Date();
-        fechaActual.setHours(parseInt(hora, 10), parseInt(minutos, 10), 0, 0);
+        let fechaActual = new Date(horario_inicio_iso);
 
         const queries = [];
 
         for (let i = 0; i < tomasTotales; i++) {
-            const fechaToma = new Date(fechaActual);
-            const fechaCompleta = fechaToma.toISOString();
+            const fechaCompleta = fechaActual.toISOString();
 
             const query = sql`
-                INSERT INTO tomas_medicamentos (user_id, medicamento_id, tratamiento_id, horario) 
+                INSERT INTO tomas_medicamentos (user_id, medicamento_id, tratamiento_id, horario)
                 VALUES (${user_id}, ${medicamento_id}, ${idTratamientoValido}, ${fechaCompleta}::timestamptz)
             `;
             queries.push(query);
 
-            fechaActual.setHours(fechaActual.getHours() + frecuenciaHorasFinal);
+            fechaActual = new Date(fechaActual.getTime() + frecuenciaHorasFinal * 3_600_000);
         }
         
         await Promise.all(queries);
@@ -217,7 +214,7 @@ router.get('/usuario/:user_id/historial', async (req: Request, res: Response): P
 router.put('/tratamiento/:tratamiento_id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { tratamiento_id } = req.params;
-        const { medicamento_id, tratamiento, horario_inicio, frecuencia_horas, duracion_dias } = req.body;
+        const { medicamento_id, tratamiento, horario_inicio_iso, frecuencia_horas, duracion_dias } = req.body;
 
         if (baneoPalabras(tratamiento)) {
             res.status(400).json({ error: "Nombre de tratamiento inapropiado" });
@@ -250,20 +247,17 @@ router.put('/tratamiento/:tratamiento_id', async (req: Request, res: Response): 
         const tomasPorDia = 24 / frecuenciaHorasFinal;
         const tomasTotales = tomasPorDia * duracion_dias;
 
-        const [hora, minutos] = horario_inicio.split(':');
-        let fechaActual = new Date();
-        fechaActual.setHours(parseInt(hora, 10), parseInt(minutos, 10), 0, 0);
+        let fechaActual = new Date(horario_inicio_iso);
 
         const queries = [];
         for (let i = 0; i < tomasTotales; i++) {
-            const fechaToma = new Date(fechaActual);
-            const fechaCompleta = fechaToma.toISOString();
+            const fechaCompleta = fechaActual.toISOString();
             queries.push(sql`
                 INSERT INTO tomas_medicamentos (user_id, medicamento_id, tratamiento_id, horario)
                 SELECT user_id, ${medicamento_id}, ${tratamiento_id}, ${fechaCompleta}::timestamptz
                 FROM tratamientos WHERE id = ${tratamiento_id}
             `);
-            fechaActual.setHours(fechaActual.getHours() + frecuenciaHorasFinal);
+            fechaActual = new Date(fechaActual.getTime() + frecuenciaHorasFinal * 3_600_000);
         }
 
         await Promise.all(queries);
@@ -353,7 +347,7 @@ router.get('/tratamiento/:tratamiento_id', async (req: Request, res: Response): 
                 t.id,
                 t.nombre,
                 tm.medicamento_id,
-                MIN(tm.horario)::text AS horario_inicio,
+                TO_CHAR(MIN(tm.horario)::timestamptz AT TIME ZONE 'America/Santiago', 'HH24:MI') AS horario_inicio,
                 COUNT(DISTINCT DATE_TRUNC('day', tm.horario)) AS duracion_dias
             FROM tratamientos t
             JOIN tomas_medicamentos tm ON t.id = tm.tratamiento_id

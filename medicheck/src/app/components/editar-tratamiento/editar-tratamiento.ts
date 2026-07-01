@@ -18,6 +18,7 @@ export class EditarTratamiento implements OnInit {
   mensaje: string = '';
   error: string = '';
   medicamentoInfo: any = null;
+  minutosPrueba: number | null = null;
 
   formulario = {
     tratamiento: '',
@@ -75,6 +76,19 @@ export class EditarTratamiento implements OnInit {
     return !!this.medicamentoInfo?.es_riesgo;
   }
 
+  private calcularPrimeraDosisISO(): string {
+    if (this.minutosPrueba && this.minutosPrueba > 0) {
+      return new Date(Date.now() + this.minutosPrueba * 60_000).toISOString();
+    }
+    const [hh, mm] = this.formulario.horario_inicio.split(':');
+    const candidata = new Date();
+    candidata.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
+    if (candidata <= new Date()) {
+      candidata.setDate(candidata.getDate() + 1);
+    }
+    return candidata.toISOString();
+  }
+
   guardarCambios(): void {
     if (!this.formulario.tratamiento || !this.formulario.horario_inicio) {
       this.error = 'Por favor completa todos los campos.';
@@ -83,9 +97,11 @@ export class EditarTratamiento implements OnInit {
     this.guardando = true;
     this.error = '';
 
+    const payload = { ...this.formulario, horario_inicio_iso: this.calcularPrimeraDosisISO() };
+
     this.http.put(
       `${API_BASE_URL}/api/tomas/tratamiento/${this.tratamientoId}`,
-      this.formulario
+      payload
     ).subscribe({
       next: () => {
         this.mensaje = '¡Tratamiento actualizado con éxito!';

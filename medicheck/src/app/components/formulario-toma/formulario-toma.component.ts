@@ -20,9 +20,10 @@ export class FormularioTomaComponent implements OnInit {
   nuevoHorario: string = '08:00';
   frecuencia: number = 8;
   duracionDias: number = 7;
-  usuarioId: number = 0; 
+  usuarioId: number = 0;
   agregando: boolean = false;
-  tratamiento: string ='';
+  tratamiento: string = '';
+  minutosPrueba: number | null = null;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -67,6 +68,19 @@ export class FormularioTomaComponent implements OnInit {
     return !!this.medicamentoInfo?.es_riesgo;
   }
 
+  private calcularPrimeraDosisISO(): string {
+    if (this.minutosPrueba && this.minutosPrueba > 0) {
+      return new Date(Date.now() + this.minutosPrueba * 60_000).toISOString();
+    }
+    const [hh, mm] = this.nuevoHorario.split(':');
+    const candidata = new Date();
+    candidata.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
+    if (candidata <= new Date()) {
+      candidata.setDate(candidata.getDate() + 1);
+    }
+    return candidata.toISOString();
+  }
+
   crearTratamiento(): void {
     if (!this.medicamentoSeleccionado) {
       alert('Por favor selecciona un medicamento de la lista.');
@@ -83,7 +97,7 @@ export class FormularioTomaComponent implements OnInit {
       user_id: this.usuarioId,
       medicamento_id: parseInt(this.medicamentoSeleccionado, 10),
       tratamiento: this.tratamiento,
-      horario_inicio: this.nuevoHorario,
+      horario_inicio_iso: this.calcularPrimeraDosisISO(),
       frecuencia_horas: this.frecuencia,
       duracion_dias: this.duracionDias
     };
