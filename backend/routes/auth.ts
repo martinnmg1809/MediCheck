@@ -190,9 +190,9 @@ router.post('/forgot-password', async (req, res) => {
 
         res.status(200).json({ message: "Correo de recuperación enviado." });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
-        res.status(500).json({ error: "No se pudo enviar el correo. Intenta nuevamente más tarde." });
+        res.status(500).json({ error: "No se pudo enviar el correo. Intenta nuevamente más tarde.", debug: error?.message });
     }
 });
 
