@@ -45,7 +45,7 @@ app-root {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: clip;
   padding: 0;
   -webkit-overflow-scrolling: touch;
 }
