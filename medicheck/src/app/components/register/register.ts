@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth';
 import { User } from '../../models/interfaces';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +11,7 @@ import { hasValidSession, saveSessionData } from '../../utils/session';
   templateUrl: './register.html',
   styleUrl: './register.css',
   standalone: true,
-  imports: [FormsModule, RouterLink]
+  imports: [CommonModule, FormsModule, RouterLink]
 })
 
 export class RegisterComponent {
@@ -20,6 +21,7 @@ export class RegisterComponent {
     password: '',
     role: 'paciente'
   };
+  errorMsg: string = '';
 
   constructor(private authService: AuthService, private router: Router) {
     if (hasValidSession()) {
@@ -28,27 +30,28 @@ export class RegisterComponent {
   }
 
   onRegister() {
+    this.errorMsg = '';
     const name = this.nuevoUsuario.name?.trim() ?? '';
     const email = this.nuevoUsuario.email?.trim().toLowerCase() ?? '';
     const password = this.nuevoUsuario.password?.trim() ?? '';
 
     if (!name || !email || !password) {
-      alert('Completa todos los campos para crear tu cuenta.');
+      this.errorMsg = 'Completa todos los campos para crear tu cuenta.';
       return;
     }
 
     if (name.length < 3) {
-      alert('El nombre debe tener al menos 3 caracteres.');
+      this.errorMsg = 'El nombre debe tener al menos 3 caracteres.';
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      alert('Ingresa un correo electrónico válido.');
+      this.errorMsg = 'Ingresa un correo electrónico válido.';
       return;
     }
 
     if (password.length < 6) {
-      alert('La contraseña debe tener al menos 6 caracteres.');
+      this.errorMsg = 'La contraseña debe tener al menos 6 caracteres.';
       return;
     }
 
@@ -60,18 +63,16 @@ export class RegisterComponent {
         const userName = res?.user?.name;
 
         if (!token || !userId) {
-          alert('No se pudo completar el registro. Intenta nuevamente.');
+          this.errorMsg = 'No se pudo completar el registro. Intenta nuevamente.';
           return;
         }
 
         saveSessionData({ token, userId, userName });
-        alert('Usuario registrado correctamente');
         this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error('Error al registrar', err);
-        const message = err?.error?.error || 'Hubo un problema con el registro';
-        alert(message);
+        this.errorMsg = err?.error?.error || 'Hubo un problema con el registro.';
       }
     });
   }

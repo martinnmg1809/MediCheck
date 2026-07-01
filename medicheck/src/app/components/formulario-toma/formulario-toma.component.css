@@ -104,6 +104,18 @@
   color: #aeaeb2;
 }
 
+/* --- ALERTA DE ERROR --- */
+.alerta-error {
+  background: #FDE8E8;
+  color: #A03A3A;
+  border: 1px solid #F1C0C0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
 /* --- BOTÓN PRINCIPAL --- */
 .btn-primario { 
   width: 100%; 

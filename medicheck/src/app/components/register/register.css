@@ -1,7 +1,8 @@
 /* Agregamos el host para asegurar que herede el alto del <main> y no empuje la navbar */
 :host {
   display: block;
-  height: 100%; 
+  min-height: 100%;
+  width: 100%;
 }
 
 .auth-container {
@@ -104,6 +105,17 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   cursor: pointer;
+}
+
+.alerta-error {
+  background: #FDE8E8;
+  color: #A03A3A;
+  border: 1px solid #F1C0C0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
 }
 
 .btn-primary {

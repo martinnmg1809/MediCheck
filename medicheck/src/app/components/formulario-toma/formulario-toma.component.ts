@@ -24,6 +24,7 @@ export class FormularioTomaComponent implements OnInit {
   agregando: boolean = false;
   tratamiento: string = '';
   minutosPrueba: number | null = null;
+  errorMsg: string = '';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -82,15 +83,15 @@ export class FormularioTomaComponent implements OnInit {
   }
 
   crearTratamiento(): void {
+    this.errorMsg = '';
     if (!this.medicamentoSeleccionado) {
-      alert('Por favor selecciona un medicamento de la lista.');
+      this.errorMsg = 'Por favor selecciona un medicamento de la lista.';
       return;
     }
     if (!this.tratamiento) {
-      alert('Por favor especifica el tratamiento correspondiente.')
+      this.errorMsg = 'Por favor especifica el tratamiento correspondiente.';
       return;
     }
-    console.log(this.tratamiento)
 
     this.agregando = true;
     const datos = {
@@ -109,8 +110,7 @@ export class FormularioTomaComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error en el envío del tratamiento:', err);
-        console.log(datos)
-        alert('Hubo un error al procesar y guardar las tomas futuras.');
+        this.errorMsg = err?.error?.error || 'Hubo un error al procesar y guardar las tomas futuras.';
         this.agregando = false;
       }
     });

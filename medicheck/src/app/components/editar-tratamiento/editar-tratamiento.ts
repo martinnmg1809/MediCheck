@@ -109,7 +109,7 @@ export class EditarTratamiento implements OnInit {
         setTimeout(() => this.router.navigate(['/list']), 1500);
       },
       error: (err) => {
-        this.error = 'Error al actualizar el tratamiento.';
+        this.error = err?.error?.error || 'Error al actualizar el tratamiento.';
         this.guardando = false;
         console.error(err);
       }

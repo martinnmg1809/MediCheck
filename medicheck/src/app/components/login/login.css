@@ -1,7 +1,8 @@
 /* Agregamos el host para asegurar que herede el alto del <main> y no empuje la navbar */
 :host {
   display: block;
-  height: 100%; 
+  min-height: 100%;
+  width: 100%;
 }
 
 .login-container {
