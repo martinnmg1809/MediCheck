@@ -9,11 +9,11 @@
 
     <div class="campo-grupo">
       <label>Medicamento</label>
-      <input type="text" class="input-moderno mb-2" [(ngModel)]="filtroTexto" placeholder="Buscar nombre...">
-      
+      <input type="text" class="input-moderno mb-2" [(ngModel)]="filtroTexto" (ngModelChange)="actualizarFiltro()" placeholder="Buscar nombre...">
+
       <select class="select-moderno" [(ngModel)]="medicamentoSeleccionado" (ngModelChange)="actualizarMedicamentoInfo()">
         <option value="" disabled selected>Selecciona el resultado</option>
-        <option *ngFor="let med of filtrarMedicamentos()" [value]="med.id">
+        <option *ngFor="let med of medicamentosFiltrados" [value]="med.id">
           {{ med.nombre_comercial }} ({{ med.concentracion }})
         </option>
       </select>
@@ -54,9 +54,10 @@
       <input type="number" class="input-moderno" [(ngModel)]="duracionDias" placeholder="Ej: 7" min="1">
     </div>
 
+    <div *ngIf="exitoMsg" class="alerta-exito">{{ exitoMsg }}</div>
     <div *ngIf="errorMsg" class="alerta-error">{{ errorMsg }}</div>
 
-    <button class="btn-primario" (click)="crearTratamiento()" [disabled]="agregando">
+    <button class="btn-primario" (click)="crearTratamiento()" [disabled]="agregando || !!exitoMsg">
       {{ agregando ? 'Guardando...' : 'Guardar programación' }}
     </button>
   </div>

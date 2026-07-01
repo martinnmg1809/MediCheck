@@ -15,6 +15,7 @@ import { contienePalabraBaneada } from '../../utils/palabras-ban';
 })
 export class FormularioTomaComponent implements OnInit {
   medicamentos: any[] = [];
+  medicamentosFiltrados: any[] = [];
   filtroTexto: string = '';
   medicamentoSeleccionado: string = '';
   medicamentoInfo: any = null;
@@ -26,13 +27,14 @@ export class FormularioTomaComponent implements OnInit {
   tratamiento: string = '';
   minutosPrueba: number | null = null;
   errorMsg: string = '';
+  exitoMsg: string = '';
   nombreBaneado: boolean = false;
 
   constructor(private http: HttpClient, private router: Router, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     const idGuardado = localStorage.getItem('user_id');
-    
+
     if (idGuardado) {
       this.usuarioId = parseInt(idGuardado, 10);
     } else {
@@ -41,23 +43,28 @@ export class FormularioTomaComponent implements OnInit {
       return;
     }
 
-    // Carga el catálogo maestro de medicamentos disponibles
     this.http.get<any[]>(`${API_BASE_URL}/api/medicamentos`).subscribe({
-      next: (data) => { this.medicamentos = data; this.cdr.detectChanges(); },
+      next: (data) => {
+        this.medicamentos = data;
+        this.medicamentosFiltrados = data;
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Error cargando catálogo de medicamentos:', err)
     });
   }
 
-  filtrarMedicamentos(): any[] {
-    if (!this.filtroTexto) return this.medicamentos;
-    return this.medicamentos.filter(m =>
-      m.nombre_comercial.toLowerCase().includes(this.filtroTexto.toLowerCase()) ||
-      m.principio_activo.toLowerCase().includes(this.filtroTexto.toLowerCase())
+  actualizarFiltro(): void {
+    if (!this.filtroTexto) {
+      this.medicamentosFiltrados = this.medicamentos;
+      return;
+    }
+    const q = this.filtroTexto.toLowerCase();
+    this.medicamentosFiltrados = this.medicamentos.filter(m =>
+      m.nombre_comercial.toLowerCase().includes(q) ||
+      m.principio_activo.toLowerCase().includes(q)
     );
   }
 
-  // Se ejecuta al elegir un medicamento del select. Si es de alto riesgo,
-  // bloquea la frecuencia al valor predefinido (el usuario solo elige la primera toma).
   actualizarMedicamentoInfo(): void {
     const id = parseInt(this.medicamentoSeleccionado, 10);
     this.medicamentoInfo = this.medicamentos.find(m => m.id === id) || null;
@@ -124,7 +131,9 @@ export class FormularioTomaComponent implements OnInit {
     this.http.post(`${API_BASE_URL}/api/tomas`, datos).subscribe({
       next: () => {
         this.agregando = false;
-        this.router.navigate(['/list']);
+        this.exitoMsg = '¡Tratamiento programado con éxito!';
+        this.cdr.detectChanges();
+        setTimeout(() => this.router.navigate(['/list']), 2000);
       },
       error: (err) => {
         console.error('Error en el envío del tratamiento:', err);
