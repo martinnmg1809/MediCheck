@@ -3,6 +3,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { API_BASE_URL } from '../../config/api.config';
+import { contienePalabraBaneada } from '../../utils/palabras-ban';
 
 @Component({
   selector: 'app-editar-tratamiento',
@@ -17,6 +19,8 @@ export class EditarTratamiento implements OnInit {
   mensaje: string = '';
   error: string = '';
   medicamentoInfo: any = null;
+  minutosPrueba: number | null = null;
+  nombreBaneado: boolean = false;
 
   formulario = {
     tratamiento: '',
@@ -40,7 +44,7 @@ export class EditarTratamiento implements OnInit {
   }
 
   cargarDatosTratamiento(): void {
-    this.http.get<any>(`http://localhost:3000/api/tomas/tratamiento/${this.tratamientoId}`).subscribe({
+    this.http.get<any>(`${API_BASE_URL}/api/tomas/tratamiento/${this.tratamientoId}`).subscribe({
       next: (data) => {
         this.formulario.tratamiento = data.nombre;
         this.formulario.medicamento_id = data.medicamento_id;
@@ -59,7 +63,7 @@ export class EditarTratamiento implements OnInit {
   // alto riesgo. Si lo es, fuerza la frecuencia al valor fijo predefinido y el
   // select de frecuencia queda bloqueado en el template.
   cargarInfoRiesgoMedicamento(): void {
-    this.http.get<any[]>('http://localhost:3000/api/medicamentos').subscribe({
+    this.http.get<any[]>(`${API_BASE_URL}/api/medicamentos`).subscribe({
       next: (medicamentos) => {
         this.medicamentoInfo = medicamentos.find(m => m.id === this.formulario.medicamento_id) || null;
         if (this.medicamentoInfo?.es_riesgo) {
@@ -70,8 +74,25 @@ export class EditarTratamiento implements OnInit {
     });
   }
 
+  validarTratamiento(): void {
+    this.nombreBaneado = contienePalabraBaneada(this.formulario.tratamiento);
+  }
+
   get esRiesgo(): boolean {
     return !!this.medicamentoInfo?.es_riesgo;
+  }
+
+  private calcularPrimeraDosisISO(): string {
+    if (this.minutosPrueba && this.minutosPrueba > 0) {
+      return new Date(Date.now() + this.minutosPrueba * 60_000).toISOString();
+    }
+    const [hh, mm] = this.formulario.horario_inicio.split(':');
+    const candidata = new Date();
+    candidata.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
+    if (candidata <= new Date()) {
+      candidata.setDate(candidata.getDate() + 1);
+    }
+    return candidata.toISOString();
   }
 
   guardarCambios(): void {
@@ -79,12 +100,18 @@ export class EditarTratamiento implements OnInit {
       this.error = 'Por favor completa todos los campos.';
       return;
     }
+    if (this.nombreBaneado) {
+      this.error = 'El nombre del tratamiento contiene términos no permitidos.';
+      return;
+    }
     this.guardando = true;
     this.error = '';
 
+    const payload = { ...this.formulario, horario_inicio_iso: this.calcularPrimeraDosisISO() };
+
     this.http.put(
-      `http://localhost:3000/api/tomas/tratamiento/${this.tratamientoId}`,
-      this.formulario
+      `${API_BASE_URL}/api/tomas/tratamiento/${this.tratamientoId}`,
+      payload
     ).subscribe({
       next: () => {
         this.mensaje = '¡Tratamiento actualizado con éxito!';
@@ -92,7 +119,7 @@ export class EditarTratamiento implements OnInit {
         setTimeout(() => this.router.navigate(['/list']), 1500);
       },
       error: (err) => {
-        this.error = 'Error al actualizar el tratamiento.';
+        this.error = err?.error?.error || 'Error al actualizar el tratamiento.';
         this.guardando = false;
         console.error(err);
       }

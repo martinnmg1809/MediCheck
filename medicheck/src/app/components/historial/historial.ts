@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { API_BASE_URL } from '../../config/api.config';
 
 @Component({
   selector: 'app-historial',
@@ -42,7 +43,7 @@ export class Historial implements OnInit {
     this.cargando = true;
 
     this.http.get<any[]>(
-      `http://localhost:3000/api/tomas/usuario/${this.usuarioId}/cumplimiento`
+      `${API_BASE_URL}/api/tomas/usuario/${this.usuarioId}/cumplimiento`
     ).subscribe({
       next: (data) => {
         this.historial = Array.isArray(data) ? data : [];
@@ -81,7 +82,7 @@ export class Historial implements OnInit {
     if (!this.detalleTomas[tratamientoId]) {
       this.cargandoDetalle[tratamientoId] = true;
       this.http.get<any[]>(
-        `http://localhost:3000/api/tomas/tratamiento/${tratamientoId}/tomas`
+        `${API_BASE_URL}/api/tomas/tratamiento/${tratamientoId}/tomas`
       ).subscribe({
         next: (data) => {
           this.detalleTomas[tratamientoId] = data;

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from '../config/api.config';
 
 export interface CatalogoSintoma {
   id: number;
@@ -21,7 +22,7 @@ export interface RegistroSintoma {
 
 @Injectable({ providedIn: 'root' })
 export class SintomasService {
-  private readonly BASE = 'http://localhost:3000/api/sintomas';
+  private readonly BASE = `${API_BASE_URL}/api/sintomas`;
 
   constructor(private http: HttpClient) {}
 

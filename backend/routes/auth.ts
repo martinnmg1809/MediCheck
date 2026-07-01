@@ -1,9 +1,8 @@
 import { Router } from 'express';
 import bcrypt from 'bcrypt'; // Importamos la librería de encriptación
 import { sql } from '../db/database'; 
-// Use require to avoid missing types error for 'nodemailer' when @types/nodemailer is not installed
-const nodemailer = require('nodemailer');
-import crypto from 'crypto'; 
+import { Resend } from 'resend';
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
@@ -167,30 +166,20 @@ router.post('/forgot-password', async (req, res) => {
             WHERE email = ${email}
         `;
 
-        // 3. Enviar el correo con timeout para evitar que la petición quede colgada
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            },
-            connectionTimeout: 10000,
-            greetingTimeout: 5000,
-            socketTimeout: 10000
-        });
+        // 3. Enviar correo con Resend (HTTP, sin bloqueo SMTP)
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const resetLink = `medicheck://form-new-password?token=${resetToken}`;
 
-        const resetLink = `http://192.168.100.14:4200/#/form-new-password?token=${resetToken}`;
-
-        await transporter.sendMail({
-            from: `"Medicheck Soporte" <${process.env.EMAIL_USER}>`,
+        await resend.emails.send({
+            from: 'Medicheck Soporte <onboarding@resend.dev>',
             to: email,
-            subject: "Recuperación de Contraseña - Medicheck",
-            text: `Haz clic en el siguiente enlace para cambiar tu contraseña: ${resetLink}`
+            subject: 'Recuperación de Contraseña - Medicheck',
+            text: `Haz clic en el siguiente enlace para cambiar tu contraseña:\n\n${resetLink}\n\nEste enlace expira en 1 hora.`
         });
 
         res.status(200).json({ message: "Correo de recuperación enviado." });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
         res.status(500).json({ error: "No se pudo enviar el correo. Intenta nuevamente más tarde." });
     }
@@ -205,28 +194,29 @@ router.post('/reset-password', async (req, res) => {
         }
         
         const userResult = await sql`
-            SELECT id, reset_token_expires FROM users 
+            SELECT id, reset_token_expires FROM users
             WHERE reset_token = ${token}
         `;
-        
-        if (userResult.length === 0){
-            return res.status(400).json("No se han encontrado usuarios")
+
+        if (userResult.length === 0) {
+            return res.status(400).json({ error: "El enlace de recuperación no es válido." });
         }
 
+        const user = userResult[0];
 
-        if (userResult.length != 0) {
-            const user = userResult[0];
-
-            const hashed_pass= await bcrypt.hash(newPassword, 10);
-
-            await sql`
-                UPDATE users 
-                SET password = ${hashed_pass}, reset_token = NULL, reset_token_expires = NULL 
-                WHERE id = ${user.id}        
-            `;
-
-            res.json({ message: "Contraseña actualizada con éxito." });
+        if (Date.now() > Number(user.reset_token_expires)) {
+            return res.status(400).json({ error: "El enlace de recuperación ha expirado. Solicita uno nuevo." });
         }
+
+        const hashed_pass = await bcrypt.hash(newPassword, 10);
+
+        await sql`
+            UPDATE users
+            SET password = ${hashed_pass}, reset_token = NULL, reset_token_expires = NULL
+            WHERE id = ${user.id}
+        `;
+
+        res.json({ message: "Contraseña actualizada con éxito." });
     }
     catch (error) {
         console.error(error);

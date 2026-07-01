@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { User } from '../models/interfaces'; 
+import { User } from '../models/interfaces';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from '../config/api.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private API_URL = 'http://localhost:3000/api/auth';
-  private API_TOMAS = 'http://localhost:3000/api/tomas';
+  private API_URL = `${API_BASE_URL}/api/auth`;
+  private API_TOMAS = `${API_BASE_URL}/api/tomas`;
 
   constructor(private http: HttpClient) {}
 

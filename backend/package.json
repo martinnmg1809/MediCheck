@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc", 
-    "start": "node dist/index.js"
+    "dev": "ts-node index.ts",
+    "build": "tsc && cp routes/palabrasBAN.txt dist/routes/palabrasBAN.txt",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,8 @@
     "@types/node": "^25.6.0",
     "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.20.0",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.0"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
@@ -29,6 +31,7 @@
     "dotenv": "^17.4.2",
     "node-cron": "^4.4.1",
     "nodemailer": "^9.0.0",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "resend": "^6.16.0"
   }
 }
