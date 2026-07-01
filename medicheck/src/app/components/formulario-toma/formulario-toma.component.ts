@@ -124,7 +124,6 @@ export class FormularioTomaComponent implements OnInit {
     this.http.post(`${API_BASE_URL}/api/tomas`, datos).subscribe({
       next: () => {
         this.agregando = false;
-        this.cdr.detectChanges();
         this.router.navigate(['/list']);
       },
       error: (err) => {
